@@ -11,6 +11,8 @@ async function run(): Promise<void> {
             return;
         }
 
+        // Debug it then :<
+        core.info(`Read only: "${core.getInput(Inputs.ReadOnly)}"`);
         if (utils.getInputAsBoolean(Inputs.ReadOnly)) {
             core.info("Cache running in read-only mode, not saving cache.");
             return;
