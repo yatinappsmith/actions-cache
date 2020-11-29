@@ -40,6 +40,7 @@ Create a workflow `.yml` file in your repositories `.github/workflows` directory
 * `path` - A list of files, directories, and wildcard patterns to cache and restore. See [`@actions/glob`](https://github.com/actions/toolkit/tree/main/packages/glob) for supported patterns. 
 * `key` - An explicit key for restoring and saving the cache
 * `restore-keys` - An ordered list of keys to use for restoring the cache if no cache hit occurred for key
+* `save` - Whether the cache should be saved after job completion. Defaults to true
 
 ### Outputs
 
