@@ -14,10 +14,10 @@ inputs:
   upload-chunk-size:
     description: 'The chunk size used to split up large files during upload, in bytes'
     required: false
-  save:
-    description: 'Whether the cache should be saved after job completion. Defaults to true'
+  read-only:
+    description: 'Whether the cache should only be restored and never saved'
     required: false
-    default: true
+    default: false
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'
@@ -25,7 +25,7 @@ runs:
   using: 'node12'
   main: 'dist/restore/index.js'
   post: 'dist/save/index.js'
-  post-if: success() && inputs.save != false
+  post-if: success() && inputs.read-only != "true"
 branding:
   icon: 'archive'
   color: 'gray-dark'
