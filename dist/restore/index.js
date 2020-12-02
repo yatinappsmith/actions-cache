@@ -4596,6 +4596,7 @@ var Inputs;
     Inputs["RestoreKeys"] = "restore-keys";
     Inputs["UploadChunkSize"] = "upload-chunk-size";
     Inputs["ReadOnly"] = "read-only";
+    Inputs["SaveOnly"] = "save-only";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var Outputs;
 (function (Outputs) {
@@ -8495,7 +8496,74 @@ exports.create = create;
 /* 286 */,
 /* 287 */,
 /* 288 */,
-/* 289 */,
+/* 289 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+/**
+ * Returns a copy of the upload options with defaults filled in.
+ *
+ * @param copy the original upload options
+ */
+function getUploadOptions(copy) {
+    const result = {
+        uploadConcurrency: 4,
+        uploadChunkSize: 32 * 1024 * 1024
+    };
+    if (copy) {
+        if (typeof copy.uploadConcurrency === 'number') {
+            result.uploadConcurrency = copy.uploadConcurrency;
+        }
+        if (typeof copy.uploadChunkSize === 'number') {
+            result.uploadChunkSize = copy.uploadChunkSize;
+        }
+    }
+    core.debug(`Upload concurrency: ${result.uploadConcurrency}`);
+    core.debug(`Upload chunk size: ${result.uploadChunkSize}`);
+    return result;
+}
+exports.getUploadOptions = getUploadOptions;
+/**
+ * Returns a copy of the download options with defaults filled in.
+ *
+ * @param copy the original download options
+ */
+function getDownloadOptions(copy) {
+    const result = {
+        useAzureSdk: true,
+        downloadConcurrency: 8,
+        timeoutInMs: 30000
+    };
+    if (copy) {
+        if (typeof copy.useAzureSdk === 'boolean') {
+            result.useAzureSdk = copy.useAzureSdk;
+        }
+        if (typeof copy.downloadConcurrency === 'number') {
+            result.downloadConcurrency = copy.downloadConcurrency;
+        }
+        if (typeof copy.timeoutInMs === 'number') {
+            result.timeoutInMs = copy.timeoutInMs;
+        }
+    }
+    core.debug(`Use Azure SDK: ${result.useAzureSdk}`);
+    core.debug(`Download concurrency: ${result.downloadConcurrency}`);
+    core.debug(`Request timeout (ms): ${result.timeoutInMs}`);
+    return result;
+}
+exports.getDownloadOptions = getDownloadOptions;
+//# sourceMappingURL=options.js.map
+
+/***/ }),
 /* 290 */,
 /* 291 */,
 /* 292 */,
@@ -9080,7 +9148,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* 321 */,
 /* 322 */,
 /* 323 */,
-/* 324 */,
+/* 324 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var CacheFilename;
+(function (CacheFilename) {
+    CacheFilename["Gzip"] = "cache.tgz";
+    CacheFilename["Zstd"] = "cache.tzst";
+})(CacheFilename = exports.CacheFilename || (exports.CacheFilename = {}));
+var CompressionMethod;
+(function (CompressionMethod) {
+    CompressionMethod["Gzip"] = "gzip";
+    // Long range mode was added to zstd in v1.3.2.
+    // This enum is for earlier version of zstd that does not have --long support
+    CompressionMethod["ZstdWithoutLong"] = "zstd-without-long";
+    CompressionMethod["Zstd"] = "zstd";
+})(CompressionMethod = exports.CompressionMethod || (exports.CompressionMethod = {}));
+// The default number of retry attempts.
+exports.DefaultRetryAttempts = 2;
+// The default delay in milliseconds between retry attempts.
+exports.DefaultRetryDelay = 5000;
+// Socket timeout in milliseconds during download.  If no traffic is received
+// over the socket during this period, the socket is destroyed and the download
+// is aborted.
+exports.SocketTimeout = 5000;
+//# sourceMappingURL=constants.js.map
+
+/***/ }),
 /* 325 */,
 /* 326 */,
 /* 327 */
@@ -33960,7 +34057,180 @@ exports.newPipeline = newPipeline;
 
 /***/ }),
 /* 374 */,
-/* 375 */,
+/* 375 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const exec = __importStar(__webpack_require__(986));
+const glob = __importStar(__webpack_require__(281));
+const io = __importStar(__webpack_require__(1));
+const fs = __importStar(__webpack_require__(747));
+const path = __importStar(__webpack_require__(622));
+const semver = __importStar(__webpack_require__(280));
+const util = __importStar(__webpack_require__(669));
+const uuid_1 = __webpack_require__(898);
+const constants_1 = __webpack_require__(324);
+// From https://github.com/actions/toolkit/blob/main/packages/tool-cache/src/tool-cache.ts#L23
+function createTempDirectory() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const IS_WINDOWS = process.platform === 'win32';
+        let tempDirectory = process.env['RUNNER_TEMP'] || '';
+        if (!tempDirectory) {
+            let baseLocation;
+            if (IS_WINDOWS) {
+                // On Windows use the USERPROFILE env variable
+                baseLocation = process.env['USERPROFILE'] || 'C:\\';
+            }
+            else {
+                if (process.platform === 'darwin') {
+                    baseLocation = '/Users';
+                }
+                else {
+                    baseLocation = '/home';
+                }
+            }
+            tempDirectory = path.join(baseLocation, 'actions', 'temp');
+        }
+        const dest = path.join(tempDirectory, uuid_1.v4());
+        yield io.mkdirP(dest);
+        return dest;
+    });
+}
+exports.createTempDirectory = createTempDirectory;
+function getArchiveFileSizeIsBytes(filePath) {
+    return fs.statSync(filePath).size;
+}
+exports.getArchiveFileSizeIsBytes = getArchiveFileSizeIsBytes;
+function resolvePaths(patterns) {
+    var e_1, _a;
+    var _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        const paths = [];
+        const workspace = (_b = process.env['GITHUB_WORKSPACE']) !== null && _b !== void 0 ? _b : process.cwd();
+        const globber = yield glob.create(patterns.join('\n'), {
+            implicitDescendants: false
+        });
+        try {
+            for (var _c = __asyncValues(globber.globGenerator()), _d; _d = yield _c.next(), !_d.done;) {
+                const file = _d.value;
+                const relativeFile = path.relative(workspace, file);
+                core.debug(`Matched: ${relativeFile}`);
+                // Paths are made relative so the tar entries are all relative to the root of the workspace.
+                paths.push(`${relativeFile}`);
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_d && !_d.done && (_a = _c.return)) yield _a.call(_c);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        return paths;
+    });
+}
+exports.resolvePaths = resolvePaths;
+function unlinkFile(filePath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return util.promisify(fs.unlink)(filePath);
+    });
+}
+exports.unlinkFile = unlinkFile;
+function getVersion(app) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.debug(`Checking ${app} --version`);
+        let versionOutput = '';
+        try {
+            yield exec.exec(`${app} --version`, [], {
+                ignoreReturnCode: true,
+                silent: true,
+                listeners: {
+                    stdout: (data) => (versionOutput += data.toString()),
+                    stderr: (data) => (versionOutput += data.toString())
+                }
+            });
+        }
+        catch (err) {
+            core.debug(err.message);
+        }
+        versionOutput = versionOutput.trim();
+        core.debug(versionOutput);
+        return versionOutput;
+    });
+}
+// Use zstandard if possible to maximize cache performance
+function getCompressionMethod() {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (process.platform === 'win32' && !(yield isGnuTarInstalled())) {
+            // Disable zstd due to bug https://github.com/actions/cache/issues/301
+            return constants_1.CompressionMethod.Gzip;
+        }
+        const versionOutput = yield getVersion('zstd');
+        const version = semver.clean(versionOutput);
+        if (!versionOutput.toLowerCase().includes('zstd command line interface')) {
+            // zstd is not installed
+            return constants_1.CompressionMethod.Gzip;
+        }
+        else if (!version || semver.lt(version, 'v1.3.2')) {
+            // zstd is installed but using a version earlier than v1.3.2
+            // v1.3.2 is required to use the `--long` options in zstd
+            return constants_1.CompressionMethod.ZstdWithoutLong;
+        }
+        else {
+            return constants_1.CompressionMethod.Zstd;
+        }
+    });
+}
+exports.getCompressionMethod = getCompressionMethod;
+function getCacheFileName(compressionMethod) {
+    return compressionMethod === constants_1.CompressionMethod.Gzip
+        ? constants_1.CacheFilename.Gzip
+        : constants_1.CacheFilename.Zstd;
+}
+exports.getCacheFileName = getCacheFileName;
+function isGnuTarInstalled() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const versionOutput = yield getVersion('tar');
+        return versionOutput.toLowerCase().includes('gnu tar');
+    });
+}
+exports.isGnuTarInstalled = isGnuTarInstalled;
+function assertDefined(name, value) {
+    if (value === undefined) {
+        throw Error(`Expected ${name} but value was undefiend`);
+    }
+    return value;
+}
+exports.assertDefined = assertDefined;
+//# sourceMappingURL=cacheUtils.js.map
+
+/***/ }),
 /* 376 */,
 /* 377 */,
 /* 378 */,
@@ -40346,7 +40616,242 @@ exports.HttpClient = HttpClient;
 
 
 /***/ }),
-/* 540 */,
+/* 540 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const http_client_1 = __webpack_require__(539);
+const storage_blob_1 = __webpack_require__(373);
+const buffer = __importStar(__webpack_require__(293));
+const fs = __importStar(__webpack_require__(747));
+const stream = __importStar(__webpack_require__(794));
+const util = __importStar(__webpack_require__(669));
+const utils = __importStar(__webpack_require__(375));
+const constants_1 = __webpack_require__(324);
+const requestUtils_1 = __webpack_require__(829);
+/**
+ * Pipes the body of a HTTP response to a stream
+ *
+ * @param response the HTTP response
+ * @param output the writable stream
+ */
+function pipeResponseToStream(response, output) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const pipeline = util.promisify(stream.pipeline);
+        yield pipeline(response.message, output);
+    });
+}
+/**
+ * Class for tracking the download state and displaying stats.
+ */
+class DownloadProgress {
+    constructor(contentLength) {
+        this.contentLength = contentLength;
+        this.segmentIndex = 0;
+        this.segmentSize = 0;
+        this.segmentOffset = 0;
+        this.receivedBytes = 0;
+        this.displayedComplete = false;
+        this.startTime = Date.now();
+    }
+    /**
+     * Progress to the next segment. Only call this method when the previous segment
+     * is complete.
+     *
+     * @param segmentSize the length of the next segment
+     */
+    nextSegment(segmentSize) {
+        this.segmentOffset = this.segmentOffset + this.segmentSize;
+        this.segmentIndex = this.segmentIndex + 1;
+        this.segmentSize = segmentSize;
+        this.receivedBytes = 0;
+        core.debug(`Downloading segment at offset ${this.segmentOffset} with length ${this.segmentSize}...`);
+    }
+    /**
+     * Sets the number of bytes received for the current segment.
+     *
+     * @param receivedBytes the number of bytes received
+     */
+    setReceivedBytes(receivedBytes) {
+        this.receivedBytes = receivedBytes;
+    }
+    /**
+     * Returns the total number of bytes transferred.
+     */
+    getTransferredBytes() {
+        return this.segmentOffset + this.receivedBytes;
+    }
+    /**
+     * Returns true if the download is complete.
+     */
+    isDone() {
+        return this.getTransferredBytes() === this.contentLength;
+    }
+    /**
+     * Prints the current download stats. Once the download completes, this will print one
+     * last line and then stop.
+     */
+    display() {
+        if (this.displayedComplete) {
+            return;
+        }
+        const transferredBytes = this.segmentOffset + this.receivedBytes;
+        const percentage = (100 * (transferredBytes / this.contentLength)).toFixed(1);
+        const elapsedTime = Date.now() - this.startTime;
+        const downloadSpeed = (transferredBytes /
+            (1024 * 1024) /
+            (elapsedTime / 1000)).toFixed(1);
+        core.info(`Received ${transferredBytes} of ${this.contentLength} (${percentage}%), ${downloadSpeed} MBs/sec`);
+        if (this.isDone()) {
+            this.displayedComplete = true;
+        }
+    }
+    /**
+     * Returns a function used to handle TransferProgressEvents.
+     */
+    onProgress() {
+        return (progress) => {
+            this.setReceivedBytes(progress.loadedBytes);
+        };
+    }
+    /**
+     * Starts the timer that displays the stats.
+     *
+     * @param delayInMs the delay between each write
+     */
+    startDisplayTimer(delayInMs = 1000) {
+        const displayCallback = () => {
+            this.display();
+            if (!this.isDone()) {
+                this.timeoutHandle = setTimeout(displayCallback, delayInMs);
+            }
+        };
+        this.timeoutHandle = setTimeout(displayCallback, delayInMs);
+    }
+    /**
+     * Stops the timer that displays the stats. As this typically indicates the download
+     * is complete, this will display one last line, unless the last line has already
+     * been written.
+     */
+    stopDisplayTimer() {
+        if (this.timeoutHandle) {
+            clearTimeout(this.timeoutHandle);
+            this.timeoutHandle = undefined;
+        }
+        this.display();
+    }
+}
+exports.DownloadProgress = DownloadProgress;
+/**
+ * Download the cache using the Actions toolkit http-client
+ *
+ * @param archiveLocation the URL for the cache
+ * @param archivePath the local path where the cache is saved
+ */
+function downloadCacheHttpClient(archiveLocation, archivePath) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const writeStream = fs.createWriteStream(archivePath);
+        const httpClient = new http_client_1.HttpClient('actions/cache');
+        const downloadResponse = yield requestUtils_1.retryHttpClientResponse('downloadCache', () => __awaiter(this, void 0, void 0, function* () { return httpClient.get(archiveLocation); }));
+        // Abort download if no traffic received over the socket.
+        downloadResponse.message.socket.setTimeout(constants_1.SocketTimeout, () => {
+            downloadResponse.message.destroy();
+            core.debug(`Aborting download, socket timed out after ${constants_1.SocketTimeout} ms`);
+        });
+        yield pipeResponseToStream(downloadResponse, writeStream);
+        // Validate download size.
+        const contentLengthHeader = downloadResponse.message.headers['content-length'];
+        if (contentLengthHeader) {
+            const expectedLength = parseInt(contentLengthHeader);
+            const actualLength = utils.getArchiveFileSizeIsBytes(archivePath);
+            if (actualLength !== expectedLength) {
+                throw new Error(`Incomplete download. Expected file size: ${expectedLength}, actual file size: ${actualLength}`);
+            }
+        }
+        else {
+            core.debug('Unable to validate download, no Content-Length header');
+        }
+    });
+}
+exports.downloadCacheHttpClient = downloadCacheHttpClient;
+/**
+ * Download the cache using the Azure Storage SDK.  Only call this method if the
+ * URL points to an Azure Storage endpoint.
+ *
+ * @param archiveLocation the URL for the cache
+ * @param archivePath the local path where the cache is saved
+ * @param options the download options with the defaults set
+ */
+function downloadCacheStorageSDK(archiveLocation, archivePath, options) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        const client = new storage_blob_1.BlockBlobClient(archiveLocation, undefined, {
+            retryOptions: {
+                // Override the timeout used when downloading each 4 MB chunk
+                // The default is 2 min / MB, which is way too slow
+                tryTimeoutInMs: options.timeoutInMs
+            }
+        });
+        const properties = yield client.getProperties();
+        const contentLength = (_a = properties.contentLength) !== null && _a !== void 0 ? _a : -1;
+        if (contentLength < 0) {
+            // We should never hit this condition, but just in case fall back to downloading the
+            // file as one large stream
+            core.debug('Unable to determine content length, downloading file with http-client...');
+            yield downloadCacheHttpClient(archiveLocation, archivePath);
+        }
+        else {
+            // Use downloadToBuffer for faster downloads, since internally it splits the
+            // file into 4 MB chunks which can then be parallelized and retried independently
+            //
+            // If the file exceeds the buffer maximum length (~1 GB on 32-bit systems and ~2 GB
+            // on 64-bit systems), split the download into multiple segments
+            const maxSegmentSize = buffer.constants.MAX_LENGTH;
+            const downloadProgress = new DownloadProgress(contentLength);
+            const fd = fs.openSync(archivePath, 'w');
+            try {
+                downloadProgress.startDisplayTimer();
+                while (!downloadProgress.isDone()) {
+                    const segmentStart = downloadProgress.segmentOffset + downloadProgress.segmentSize;
+                    const segmentSize = Math.min(maxSegmentSize, contentLength - segmentStart);
+                    downloadProgress.nextSegment(segmentSize);
+                    const result = yield client.downloadToBuffer(segmentStart, segmentSize, {
+                        concurrency: options.downloadConcurrency,
+                        onProgress: downloadProgress.onProgress()
+                    });
+                    fs.writeFileSync(fd, result);
+                }
+            }
+            finally {
+                downloadProgress.stopDisplayTimer();
+                fs.closeSync(fd);
+            }
+        }
+    });
+}
+exports.downloadCacheStorageSDK = downloadCacheStorageSDK;
+//# sourceMappingURL=downloadUtils.js.map
+
+/***/ }),
 /* 541 */
 /***/ (function(module) {
 
@@ -41086,7 +41591,137 @@ function clean(key)
 
 
 /***/ }),
-/* 583 */,
+/* 583 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const exec_1 = __webpack_require__(986);
+const io = __importStar(__webpack_require__(1));
+const fs_1 = __webpack_require__(747);
+const path = __importStar(__webpack_require__(622));
+const utils = __importStar(__webpack_require__(375));
+const constants_1 = __webpack_require__(324);
+function getTarPath(args, compressionMethod) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const IS_WINDOWS = process.platform === 'win32';
+        if (IS_WINDOWS) {
+            const systemTar = `${process.env['windir']}\\System32\\tar.exe`;
+            if (compressionMethod !== constants_1.CompressionMethod.Gzip) {
+                // We only use zstandard compression on windows when gnu tar is installed due to
+                // a bug with compressing large files with bsdtar + zstd
+                args.push('--force-local');
+            }
+            else if (fs_1.existsSync(systemTar)) {
+                return systemTar;
+            }
+            else if (yield utils.isGnuTarInstalled()) {
+                args.push('--force-local');
+            }
+        }
+        return yield io.which('tar', true);
+    });
+}
+function execTar(args, compressionMethod, cwd) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield exec_1.exec(`"${yield getTarPath(args, compressionMethod)}"`, args, { cwd });
+        }
+        catch (error) {
+            throw new Error(`Tar failed with error: ${error === null || error === void 0 ? void 0 : error.message}`);
+        }
+    });
+}
+function getWorkingDirectory() {
+    var _a;
+    return (_a = process.env['GITHUB_WORKSPACE']) !== null && _a !== void 0 ? _a : process.cwd();
+}
+function extractTar(archivePath, compressionMethod) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Create directory to extract tar into
+        const workingDirectory = getWorkingDirectory();
+        yield io.mkdirP(workingDirectory);
+        // --d: Decompress.
+        // --long=#: Enables long distance matching with # bits. Maximum is 30 (1GB) on 32-bit OS and 31 (2GB) on 64-bit.
+        // Using 30 here because we also support 32-bit self-hosted runners.
+        function getCompressionProgram() {
+            switch (compressionMethod) {
+                case constants_1.CompressionMethod.Zstd:
+                    return ['--use-compress-program', 'zstd -d --long=30'];
+                case constants_1.CompressionMethod.ZstdWithoutLong:
+                    return ['--use-compress-program', 'zstd -d'];
+                default:
+                    return ['-z'];
+            }
+        }
+        const args = [
+            ...getCompressionProgram(),
+            '-xf',
+            archivePath.replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
+            '-P',
+            '-C',
+            workingDirectory.replace(new RegExp(`\\${path.sep}`, 'g'), '/')
+        ];
+        yield execTar(args, compressionMethod);
+    });
+}
+exports.extractTar = extractTar;
+function createTar(archiveFolder, sourceDirectories, compressionMethod) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Write source directories to manifest.txt to avoid command length limits
+        const manifestFilename = 'manifest.txt';
+        const cacheFileName = utils.getCacheFileName(compressionMethod);
+        fs_1.writeFileSync(path.join(archiveFolder, manifestFilename), sourceDirectories.join('\n'));
+        const workingDirectory = getWorkingDirectory();
+        // -T#: Compress using # working thread. If # is 0, attempt to detect and use the number of physical CPU cores.
+        // --long=#: Enables long distance matching with # bits. Maximum is 30 (1GB) on 32-bit OS and 31 (2GB) on 64-bit.
+        // Using 30 here because we also support 32-bit self-hosted runners.
+        // Long range mode is added to zstd in v1.3.2 release, so we will not use --long in older version of zstd.
+        function getCompressionProgram() {
+            switch (compressionMethod) {
+                case constants_1.CompressionMethod.Zstd:
+                    return ['--use-compress-program', 'zstd -T0 --long=30'];
+                case constants_1.CompressionMethod.ZstdWithoutLong:
+                    return ['--use-compress-program', 'zstd -T0'];
+                default:
+                    return ['-z'];
+            }
+        }
+        const args = [
+            '--posix',
+            ...getCompressionProgram(),
+            '-cf',
+            cacheFileName.replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
+            '-P',
+            '-C',
+            workingDirectory.replace(new RegExp(`\\${path.sep}`, 'g'), '/'),
+            '--files-from',
+            manifestFilename
+        ];
+        yield execTar(args, compressionMethod, archiveFolder);
+    });
+}
+exports.createTar = createTar;
+//# sourceMappingURL=tar.js.map
+
+/***/ }),
 /* 584 */,
 /* 585 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
@@ -44610,7 +45245,227 @@ exports.Context = Context;
 
 /***/ }),
 /* 716 */,
-/* 717 */,
+/* 717 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const http_client_1 = __webpack_require__(539);
+const auth_1 = __webpack_require__(226);
+const crypto = __importStar(__webpack_require__(417));
+const fs = __importStar(__webpack_require__(747));
+const url_1 = __webpack_require__(835);
+const utils = __importStar(__webpack_require__(375));
+const constants_1 = __webpack_require__(324);
+const downloadUtils_1 = __webpack_require__(540);
+const options_1 = __webpack_require__(289);
+const requestUtils_1 = __webpack_require__(829);
+const versionSalt = '1.0';
+function getCacheApiUrl(resource) {
+    // Ideally we just use ACTIONS_CACHE_URL
+    const baseUrl = (process.env['ACTIONS_CACHE_URL'] ||
+        process.env['ACTIONS_RUNTIME_URL'] ||
+        '').replace('pipelines', 'artifactcache');
+    if (!baseUrl) {
+        throw new Error('Cache Service Url not found, unable to restore cache.');
+    }
+    const url = `${baseUrl}_apis/artifactcache/${resource}`;
+    core.debug(`Resource Url: ${url}`);
+    return url;
+}
+function createAcceptHeader(type, apiVersion) {
+    return `${type};api-version=${apiVersion}`;
+}
+function getRequestOptions() {
+    const requestOptions = {
+        headers: {
+            Accept: createAcceptHeader('application/json', '6.0-preview.1')
+        }
+    };
+    return requestOptions;
+}
+function createHttpClient() {
+    const token = process.env['ACTIONS_RUNTIME_TOKEN'] || '';
+    const bearerCredentialHandler = new auth_1.BearerCredentialHandler(token);
+    return new http_client_1.HttpClient('actions/cache', [bearerCredentialHandler], getRequestOptions());
+}
+function getCacheVersion(paths, compressionMethod) {
+    const components = paths.concat(!compressionMethod || compressionMethod === constants_1.CompressionMethod.Gzip
+        ? []
+        : [compressionMethod]);
+    // Add salt to cache version to support breaking changes in cache entry
+    components.push(versionSalt);
+    return crypto
+        .createHash('sha256')
+        .update(components.join('|'))
+        .digest('hex');
+}
+exports.getCacheVersion = getCacheVersion;
+function getCacheEntry(keys, paths, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const httpClient = createHttpClient();
+        const version = getCacheVersion(paths, options === null || options === void 0 ? void 0 : options.compressionMethod);
+        const resource = `cache?keys=${encodeURIComponent(keys.join(','))}&version=${version}`;
+        const response = yield requestUtils_1.retryTypedResponse('getCacheEntry', () => __awaiter(this, void 0, void 0, function* () { return httpClient.getJson(getCacheApiUrl(resource)); }));
+        if (response.statusCode === 204) {
+            return null;
+        }
+        if (!requestUtils_1.isSuccessStatusCode(response.statusCode)) {
+            throw new Error(`Cache service responded with ${response.statusCode}`);
+        }
+        const cacheResult = response.result;
+        const cacheDownloadUrl = cacheResult === null || cacheResult === void 0 ? void 0 : cacheResult.archiveLocation;
+        if (!cacheDownloadUrl) {
+            throw new Error('Cache not found.');
+        }
+        core.setSecret(cacheDownloadUrl);
+        core.debug(`Cache Result:`);
+        core.debug(JSON.stringify(cacheResult));
+        return cacheResult;
+    });
+}
+exports.getCacheEntry = getCacheEntry;
+function downloadCache(archiveLocation, archivePath, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const archiveUrl = new url_1.URL(archiveLocation);
+        const downloadOptions = options_1.getDownloadOptions(options);
+        if (downloadOptions.useAzureSdk &&
+            archiveUrl.hostname.endsWith('.blob.core.windows.net')) {
+            // Use Azure storage SDK to download caches hosted on Azure to improve speed and reliability.
+            yield downloadUtils_1.downloadCacheStorageSDK(archiveLocation, archivePath, downloadOptions);
+        }
+        else {
+            // Otherwise, download using the Actions http-client.
+            yield downloadUtils_1.downloadCacheHttpClient(archiveLocation, archivePath);
+        }
+    });
+}
+exports.downloadCache = downloadCache;
+// Reserve Cache
+function reserveCache(key, paths, options) {
+    var _a, _b;
+    return __awaiter(this, void 0, void 0, function* () {
+        const httpClient = createHttpClient();
+        const version = getCacheVersion(paths, options === null || options === void 0 ? void 0 : options.compressionMethod);
+        const reserveCacheRequest = {
+            key,
+            version
+        };
+        const response = yield requestUtils_1.retryTypedResponse('reserveCache', () => __awaiter(this, void 0, void 0, function* () {
+            return httpClient.postJson(getCacheApiUrl('caches'), reserveCacheRequest);
+        }));
+        return (_b = (_a = response === null || response === void 0 ? void 0 : response.result) === null || _a === void 0 ? void 0 : _a.cacheId) !== null && _b !== void 0 ? _b : -1;
+    });
+}
+exports.reserveCache = reserveCache;
+function getContentRange(start, end) {
+    // Format: `bytes start-end/filesize
+    // start and end are inclusive
+    // filesize can be *
+    // For a 200 byte chunk starting at byte 0:
+    // Content-Range: bytes 0-199/*
+    return `bytes ${start}-${end}/*`;
+}
+function uploadChunk(httpClient, resourceUrl, openStream, start, end) {
+    return __awaiter(this, void 0, void 0, function* () {
+        core.debug(`Uploading chunk of size ${end -
+            start +
+            1} bytes at offset ${start} with content range: ${getContentRange(start, end)}`);
+        const additionalHeaders = {
+            'Content-Type': 'application/octet-stream',
+            'Content-Range': getContentRange(start, end)
+        };
+        const uploadChunkResponse = yield requestUtils_1.retryHttpClientResponse(`uploadChunk (start: ${start}, end: ${end})`, () => __awaiter(this, void 0, void 0, function* () {
+            return httpClient.sendStream('PATCH', resourceUrl, openStream(), additionalHeaders);
+        }));
+        if (!requestUtils_1.isSuccessStatusCode(uploadChunkResponse.message.statusCode)) {
+            throw new Error(`Cache service responded with ${uploadChunkResponse.message.statusCode} during upload chunk.`);
+        }
+    });
+}
+function uploadFile(httpClient, cacheId, archivePath, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Upload Chunks
+        const fileSize = fs.statSync(archivePath).size;
+        const resourceUrl = getCacheApiUrl(`caches/${cacheId.toString()}`);
+        const fd = fs.openSync(archivePath, 'r');
+        const uploadOptions = options_1.getUploadOptions(options);
+        const concurrency = utils.assertDefined('uploadConcurrency', uploadOptions.uploadConcurrency);
+        const maxChunkSize = utils.assertDefined('uploadChunkSize', uploadOptions.uploadChunkSize);
+        const parallelUploads = [...new Array(concurrency).keys()];
+        core.debug('Awaiting all uploads');
+        let offset = 0;
+        try {
+            yield Promise.all(parallelUploads.map(() => __awaiter(this, void 0, void 0, function* () {
+                while (offset < fileSize) {
+                    const chunkSize = Math.min(fileSize - offset, maxChunkSize);
+                    const start = offset;
+                    const end = offset + chunkSize - 1;
+                    offset += maxChunkSize;
+                    yield uploadChunk(httpClient, resourceUrl, () => fs
+                        .createReadStream(archivePath, {
+                        fd,
+                        start,
+                        end,
+                        autoClose: false
+                    })
+                        .on('error', error => {
+                        throw new Error(`Cache upload failed because file read failed with ${error.message}`);
+                    }), start, end);
+                }
+            })));
+        }
+        finally {
+            fs.closeSync(fd);
+        }
+        return;
+    });
+}
+function commitCache(httpClient, cacheId, filesize) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const commitCacheRequest = { size: filesize };
+        return yield requestUtils_1.retryTypedResponse('commitCache', () => __awaiter(this, void 0, void 0, function* () {
+            return httpClient.postJson(getCacheApiUrl(`caches/${cacheId.toString()}`), commitCacheRequest);
+        }));
+    });
+}
+function saveCache(cacheId, archivePath, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const httpClient = createHttpClient();
+        core.debug('Upload cache');
+        yield uploadFile(httpClient, cacheId, archivePath, options);
+        // Commit Cache
+        core.debug('Commiting cache');
+        const cacheSize = utils.getArchiveFileSizeIsBytes(archivePath);
+        const commitCacheResponse = yield commitCache(httpClient, cacheId, cacheSize);
+        if (!requestUtils_1.isSuccessStatusCode(commitCacheResponse.statusCode)) {
+            throw new Error(`Cache service responded with ${commitCacheResponse.statusCode} during commit cache.`);
+        }
+        core.info('Cache saved successfully');
+    });
+}
+exports.saveCache = saveCache;
+//# sourceMappingURL=cacheHttpClient.js.map
+
+/***/ }),
 /* 718 */,
 /* 719 */,
 /* 720 */,
@@ -44993,7 +45848,174 @@ function rng() {
 /* 739 */,
 /* 740 */,
 /* 741 */,
-/* 742 */,
+/* 742 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const path = __importStar(__webpack_require__(622));
+const utils = __importStar(__webpack_require__(375));
+const cacheHttpClient = __importStar(__webpack_require__(717));
+const tar_1 = __webpack_require__(583);
+class ValidationError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ValidationError';
+        Object.setPrototypeOf(this, ValidationError.prototype);
+    }
+}
+exports.ValidationError = ValidationError;
+class ReserveCacheError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ReserveCacheError';
+        Object.setPrototypeOf(this, ReserveCacheError.prototype);
+    }
+}
+exports.ReserveCacheError = ReserveCacheError;
+function checkPaths(paths) {
+    if (!paths || paths.length === 0) {
+        throw new ValidationError(`Path Validation Error: At least one directory or file path is required`);
+    }
+}
+function checkKey(key) {
+    if (key.length > 512) {
+        throw new ValidationError(`Key Validation Error: ${key} cannot be larger than 512 characters.`);
+    }
+    const regex = /^[^,]*$/;
+    if (!regex.test(key)) {
+        throw new ValidationError(`Key Validation Error: ${key} cannot contain commas.`);
+    }
+}
+/**
+ * Get the cache entry from keys
+ *
+ * @param paths a list of file paths to restore from the cache
+ * @param primaryKey an explicit key for restoring the cache
+ * @param restoreKeys an optional ordered list of keys to use for restoring the cache if no cache hit occurred for key
+ * @param compressionMethod cache compression method
+ * @returns string returns the cache entry for the cache hit, otherwise returns null
+ */
+function getCacheEntry(paths, primaryKey, restoreKeys, compressionMethod) {
+    return __awaiter(this, void 0, void 0, function* () {
+        checkPaths(paths);
+        restoreKeys = restoreKeys || [];
+        const keys = [primaryKey, ...restoreKeys];
+        core.debug('Resolved Keys:');
+        core.debug(JSON.stringify(keys));
+        if (keys.length > 10) {
+            throw new ValidationError(`Key Validation Error: Keys are limited to a maximum of 10.`);
+        }
+        for (const key of keys) {
+            checkKey(key);
+        }
+        // path are needed to compute version
+        return yield cacheHttpClient.getCacheEntry(keys, paths, {
+            compressionMethod: compressionMethod !== null && compressionMethod !== void 0 ? compressionMethod : (yield utils.getCompressionMethod())
+        });
+    });
+}
+exports.getCacheEntry = getCacheEntry;
+/**
+ * Restores cache from keys
+ *
+ * @param paths a list of file paths to restore from the cache
+ * @param primaryKey an explicit key for restoring the cache
+ * @param restoreKeys an optional ordered list of keys to use for restoring the cache if no cache hit occurred for key
+ * @param downloadOptions cache download options
+ * @returns string returns the key for the cache hit, otherwise returns undefined
+ */
+function restoreCache(paths, primaryKey, restoreKeys, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const compressionMethod = yield utils.getCompressionMethod();
+        const cacheEntry = yield getCacheEntry(paths, primaryKey, restoreKeys, compressionMethod);
+        if (!(cacheEntry === null || cacheEntry === void 0 ? void 0 : cacheEntry.archiveLocation)) {
+            // Cache not found
+            return undefined;
+        }
+        const archivePath = path.join(yield utils.createTempDirectory(), utils.getCacheFileName(compressionMethod));
+        core.debug(`Archive Path: ${archivePath}`);
+        try {
+            // Download the cache from the cache entry
+            yield cacheHttpClient.downloadCache(cacheEntry.archiveLocation, archivePath, options);
+            const archiveFileSize = utils.getArchiveFileSizeIsBytes(archivePath);
+            core.info(`Cache Size: ~${Math.round(archiveFileSize / (1024 * 1024))} MB (${archiveFileSize} B)`);
+            yield tar_1.extractTar(archivePath, compressionMethod);
+        }
+        finally {
+            // Try to delete the archive to save space
+            try {
+                yield utils.unlinkFile(archivePath);
+            }
+            catch (error) {
+                core.debug(`Failed to delete archive: ${error}`);
+            }
+        }
+        return cacheEntry.cacheKey;
+    });
+}
+exports.restoreCache = restoreCache;
+/**
+ * Saves a list of files with the specified key
+ *
+ * @param paths a list of file paths to be cached
+ * @param key an explicit key for restoring the cache
+ * @param options cache upload options
+ * @returns number returns cacheId if the cache was saved successfully and throws an error if save fails
+ */
+function saveCache(paths, key, options) {
+    return __awaiter(this, void 0, void 0, function* () {
+        checkPaths(paths);
+        checkKey(key);
+        const compressionMethod = yield utils.getCompressionMethod();
+        core.debug('Reserving Cache');
+        const cacheId = yield cacheHttpClient.reserveCache(key, paths, {
+            compressionMethod
+        });
+        if (cacheId === -1) {
+            throw new ReserveCacheError(`Unable to reserve cache with key ${key}, another job may be creating this cache.`);
+        }
+        core.debug(`Cache ID: ${cacheId}`);
+        const cachePaths = yield utils.resolvePaths(paths);
+        core.debug('Cache Paths:');
+        core.debug(`${JSON.stringify(cachePaths)}`);
+        const archiveFolder = yield utils.createTempDirectory();
+        const archivePath = path.join(archiveFolder, utils.getCacheFileName(compressionMethod));
+        core.debug(`Archive Path: ${archivePath}`);
+        yield tar_1.createTar(archiveFolder, cachePaths, compressionMethod);
+        const fileSizeLimit = 5 * 1024 * 1024 * 1024; // 5GB per repo limit
+        const archiveFileSize = utils.getArchiveFileSizeIsBytes(archivePath);
+        core.debug(`File Size: ${archiveFileSize}`);
+        if (archiveFileSize > fileSizeLimit) {
+            throw new Error(`Cache size of ~${Math.round(archiveFileSize / (1024 * 1024))} MB (${archiveFileSize} B) is over the 5GB limit, not saving cache.`);
+        }
+        core.debug(`Saving Cache (ID: ${cacheId})`);
+        yield cacheHttpClient.saveCache(cacheId, archivePath, options);
+        return cacheId;
+    });
+}
+exports.saveCache = saveCache;
+//# sourceMappingURL=cache.js.map
+
+/***/ }),
 /* 743 */,
 /* 744 */
 /***/ (function(__unusedmodule, exports) {
@@ -46121,6 +47143,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const cache = __importStar(__webpack_require__(692));
 const core = __importStar(__webpack_require__(470));
+const cacheNew = __importStar(__webpack_require__(742));
 const constants_1 = __webpack_require__(196);
 const utils = __importStar(__webpack_require__(443));
 function run() {
@@ -46143,6 +47166,23 @@ function run() {
                 required: true
             });
             try {
+                if (utils.getInputAsBoolean(constants_1.Inputs.SaveOnly)) {
+                    const cacheEntry = yield cacheNew.getCacheEntry(cachePaths, primaryKey, restoreKeys);
+                    if (cacheEntry === null || cacheEntry === void 0 ? void 0 : cacheEntry.cacheKey) {
+                        // Store the matched cache key
+                        utils.setCacheState(cacheEntry.cacheKey);
+                        const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheEntry.cacheKey);
+                        utils.setCacheHitOutput(isExactKeyMatch);
+                        core.info(`Cache hit occurred. Skipping cache download as \`save-only\` is set.`);
+                    }
+                    else {
+                        core.info(`Cache not found for input keys: ${[
+                            primaryKey,
+                            ...restoreKeys
+                        ].join(", ")}`);
+                    }
+                    return;
+                }
                 const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
                 if (!cacheKey) {
                     core.info(`Cache not found for input keys: ${[
@@ -47719,7 +48759,131 @@ module.exports = v4;
 /***/ }),
 /* 827 */,
 /* 828 */,
-/* 829 */,
+/* 829 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const http_client_1 = __webpack_require__(539);
+const constants_1 = __webpack_require__(324);
+function isSuccessStatusCode(statusCode) {
+    if (!statusCode) {
+        return false;
+    }
+    return statusCode >= 200 && statusCode < 300;
+}
+exports.isSuccessStatusCode = isSuccessStatusCode;
+function isServerErrorStatusCode(statusCode) {
+    if (!statusCode) {
+        return true;
+    }
+    return statusCode >= 500;
+}
+exports.isServerErrorStatusCode = isServerErrorStatusCode;
+function isRetryableStatusCode(statusCode) {
+    if (!statusCode) {
+        return false;
+    }
+    const retryableStatusCodes = [
+        http_client_1.HttpCodes.BadGateway,
+        http_client_1.HttpCodes.ServiceUnavailable,
+        http_client_1.HttpCodes.GatewayTimeout
+    ];
+    return retryableStatusCodes.includes(statusCode);
+}
+exports.isRetryableStatusCode = isRetryableStatusCode;
+function sleep(milliseconds) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+    });
+}
+function retry(name, method, getStatusCode, maxAttempts = constants_1.DefaultRetryAttempts, delay = constants_1.DefaultRetryDelay, onError = undefined) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let errorMessage = '';
+        let attempt = 1;
+        while (attempt <= maxAttempts) {
+            let response = undefined;
+            let statusCode = undefined;
+            let isRetryable = false;
+            try {
+                response = yield method();
+            }
+            catch (error) {
+                if (onError) {
+                    response = onError(error);
+                }
+                isRetryable = true;
+                errorMessage = error.message;
+            }
+            if (response) {
+                statusCode = getStatusCode(response);
+                if (!isServerErrorStatusCode(statusCode)) {
+                    return response;
+                }
+            }
+            if (statusCode) {
+                isRetryable = isRetryableStatusCode(statusCode);
+                errorMessage = `Cache service responded with ${statusCode}`;
+            }
+            core.debug(`${name} - Attempt ${attempt} of ${maxAttempts} failed with error: ${errorMessage}`);
+            if (!isRetryable) {
+                core.debug(`${name} - Error is not retryable`);
+                break;
+            }
+            yield sleep(delay);
+            attempt++;
+        }
+        throw Error(`${name} failed: ${errorMessage}`);
+    });
+}
+exports.retry = retry;
+function retryTypedResponse(name, method, maxAttempts = constants_1.DefaultRetryAttempts, delay = constants_1.DefaultRetryDelay) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield retry(name, method, (response) => response.statusCode, maxAttempts, delay, 
+        // If the error object contains the statusCode property, extract it and return
+        // an ITypedResponse<T> so it can be processed by the retry logic.
+        (error) => {
+            if (error instanceof http_client_1.HttpClientError) {
+                return {
+                    statusCode: error.statusCode,
+                    result: null,
+                    headers: {}
+                };
+            }
+            else {
+                return undefined;
+            }
+        });
+    });
+}
+exports.retryTypedResponse = retryTypedResponse;
+function retryHttpClientResponse(name, method, maxAttempts = constants_1.DefaultRetryAttempts, delay = constants_1.DefaultRetryDelay) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield retry(name, method, (response) => response.message.statusCode, maxAttempts, delay);
+    });
+}
+exports.retryHttpClientResponse = retryHttpClientResponse;
+//# sourceMappingURL=requestUtils.js.map
+
+/***/ }),
 /* 830 */,
 /* 831 */,
 /* 832 */,

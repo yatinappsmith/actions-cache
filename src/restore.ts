@@ -1,5 +1,6 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
+import * as cacheNew from "@martijnhols/actions-cache";
 
 import { Events, Inputs, State } from "./constants";
 import * as utils from "./utils/actionUtils";
@@ -31,6 +32,38 @@ async function run(): Promise<void> {
         });
 
         try {
+            if (utils.getInputAsBoolean(Inputs.SaveOnly)) {
+                const cacheEntry = await cacheNew.getCacheEntry(
+                    cachePaths,
+                    primaryKey,
+                    restoreKeys
+                );
+
+                if (cacheEntry?.cacheKey) {
+                    // Store the matched cache key
+                    utils.setCacheState(cacheEntry.cacheKey);
+
+                    const isExactKeyMatch = utils.isExactKeyMatch(
+                        primaryKey,
+                        cacheEntry.cacheKey
+                    );
+
+                    utils.setCacheHitOutput(isExactKeyMatch);
+
+                    core.info(
+                        `Cache hit occurred. Skipping cache download as \`save-only\` is set.`
+                    );
+                } else {
+                    core.info(
+                        `Cache not found for input keys: ${[
+                            primaryKey,
+                            ...restoreKeys
+                        ].join(", ")}`
+                    );
+                }
+                return;
+            }
+
             const cacheKey = await cache.restoreCache(
                 cachePaths,
                 primaryKey,

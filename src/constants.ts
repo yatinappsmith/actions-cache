@@ -3,7 +3,8 @@ export enum Inputs {
     Path = "path",
     RestoreKeys = "restore-keys",
     UploadChunkSize = "upload-chunk-size",
-    ReadOnly = "read-only"
+    ReadOnly = "read-only",
+    SaveOnly = "save-only"
 }
 
 export enum Outputs {

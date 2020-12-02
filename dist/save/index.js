@@ -4596,6 +4596,7 @@ var Inputs;
     Inputs["RestoreKeys"] = "restore-keys";
     Inputs["UploadChunkSize"] = "upload-chunk-size";
     Inputs["ReadOnly"] = "read-only";
+    Inputs["SaveOnly"] = "save-only";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var Outputs;
 (function (Outputs) {

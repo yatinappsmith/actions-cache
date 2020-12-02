@@ -1,5 +1,6 @@
 import * as cache from "@actions/cache";
 import * as core from "@actions/core";
+import * as cacheNew from "@martijnhols/actions-cache";
 
 import { Events, Inputs, RefKey } from "../src/constants";
 import run from "../src/restore";
@@ -345,5 +346,86 @@ test("restore with read-only with cache found for key", async () => {
     expect(setCacheHitOutputMock).toHaveBeenCalledWith(true);
 
     expect(infoMock).toHaveBeenCalledWith(`Cache restored from key: ${key}`);
+    expect(failedMock).toHaveBeenCalledTimes(0);
+});
+
+test("restore with save-only with cache found for key", async () => {
+    const path = "node_modules";
+    const key = "node-test";
+    testUtils.setInputs({
+        path: path,
+        key,
+        saveOnly: true
+    });
+
+    const infoMock = jest.spyOn(core, "info");
+    const failedMock = jest.spyOn(core, "setFailed");
+    const stateMock = jest.spyOn(core, "saveState");
+    const setCacheHitOutputMock = jest.spyOn(actionUtils, "setCacheHitOutput");
+    const restoreCacheMock = jest
+        .spyOn(cache, "restoreCache")
+        .mockImplementationOnce(() => {
+            return Promise.resolve(key);
+        });
+    const getCacheEntryMock = jest
+        .spyOn(cacheNew, "getCacheEntry")
+        .mockImplementationOnce(() => {
+            return Promise.resolve({
+                cacheKey: key,
+                scope: "refs/heads/main",
+                archiveLocation: "www.actionscache.test/download"
+            });
+        });
+
+    await run();
+
+    expect(restoreCacheMock).toHaveBeenCalledTimes(0);
+    expect(getCacheEntryMock).toHaveBeenCalledTimes(1);
+
+    expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
+    expect(setCacheHitOutputMock).toHaveBeenCalledTimes(1);
+    expect(setCacheHitOutputMock).toHaveBeenCalledWith(true);
+
+    expect(infoMock).toHaveBeenCalledWith(
+        "Cache hit occurred. Skipping cache download as `save-only` is set."
+    );
+    expect(failedMock).toHaveBeenCalledTimes(0);
+});
+
+test("restore with save-only with no cache found for key", async () => {
+    const path = "node_modules";
+    const key = "node-test";
+    testUtils.setInputs({
+        path: path,
+        key,
+        saveOnly: true
+    });
+
+    const infoMock = jest.spyOn(core, "info");
+    const failedMock = jest.spyOn(core, "setFailed");
+    const stateMock = jest.spyOn(core, "saveState");
+    const setCacheHitOutputMock = jest.spyOn(actionUtils, "setCacheHitOutput");
+    const restoreCacheMock = jest
+        .spyOn(cache, "restoreCache")
+        .mockImplementationOnce(() => {
+            return Promise.resolve(key);
+        });
+    const getCacheEntryMock = jest
+        .spyOn(cacheNew, "getCacheEntry")
+        .mockImplementationOnce(() => {
+            return Promise.resolve(null);
+        });
+
+    await run();
+
+    expect(restoreCacheMock).toHaveBeenCalledTimes(0);
+    expect(getCacheEntryMock).toHaveBeenCalledTimes(1);
+
+    expect(stateMock).toHaveBeenCalledWith("CACHE_KEY", key);
+    expect(setCacheHitOutputMock).toHaveBeenCalledTimes(0);
+
+    expect(infoMock).toHaveBeenCalledWith(
+        "Cache not found for input keys: node-test"
+    );
     expect(failedMock).toHaveBeenCalledTimes(0);
 });

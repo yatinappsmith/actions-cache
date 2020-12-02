@@ -14,6 +14,7 @@ interface CacheInput {
     key: string;
     restoreKeys?: string[];
     readOnly?: boolean;
+    saveOnly?: boolean;
 }
 
 export function setInputs(input: CacheInput): void {
@@ -22,6 +23,7 @@ export function setInputs(input: CacheInput): void {
     input.restoreKeys &&
         setInput(Inputs.RestoreKeys, input.restoreKeys.join("\n"));
     setInput(Inputs.ReadOnly, input.readOnly ? "true" : "false");
+    setInput(Inputs.SaveOnly, input.saveOnly ? "true" : "false");
 }
 
 export function clearInputs(): void {
@@ -30,4 +32,5 @@ export function clearInputs(): void {
     delete process.env[getInputName(Inputs.RestoreKeys)];
     delete process.env[getInputName(Inputs.UploadChunkSize)];
     delete process.env[getInputName(Inputs.ReadOnly)];
+    delete process.env[getInputName(Inputs.SaveOnly)];
 }

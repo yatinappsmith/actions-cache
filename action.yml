@@ -15,8 +15,13 @@ inputs:
     description: 'The chunk size used to split up large files during upload, in bytes'
     required: false
   read-only:
-    description: 'Set to true to never save the cache'
+    description: 'Whether the cache should only be restored and never saved'
     required: false
+    default: false
+  save-only:
+    description: 'Whether the cache should never be restored, and only saved. Saving only occurs when there was no match on the primary key to prevent writing an empty cache'
+    required: false
+    default: false
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'
