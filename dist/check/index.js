@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(681);
+/******/ 		return __webpack_require__(562);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -1881,7 +1881,7 @@ module.exports = require("os");
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-const pubsuffix = __webpack_require__(562);
+const pubsuffix = __webpack_require__(324);
 
 // Gives the permutation of all possible domainMatch()es of a given domain. The
 // array is in shortest-to-longest order.  Handy for indexing.
@@ -2924,7 +2924,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 /***/ }),
 /* 96 */,
-/* 97 */,
+/* 97 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const actionUtils_1 = __webpack_require__(443);
+const constants_1 = __webpack_require__(558);
+function getCachePaths() {
+    return actionUtils_1.getInputAsArray(constants_1.Inputs.Path, {
+        required: true
+    });
+}
+exports.default = getCachePaths;
+
+
+/***/ }),
 /* 98 */,
 /* 99 */,
 /* 100 */,
@@ -6915,72 +6931,7 @@ exports.default = _default;
 
 
 /***/ }),
-/* 258 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const cache = __importStar(__webpack_require__(742));
-const utils = __importStar(__webpack_require__(443));
-const constants_1 = __webpack_require__(558);
-function save(primaryKey) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const cachePaths = utils.getInputAsArray(constants_1.Inputs.Path, {
-            required: true
-        });
-        try {
-            yield cache.saveCache(cachePaths, primaryKey, {
-                uploadChunkSize: utils.getInputAsInt(constants_1.Inputs.UploadChunkSize)
-            });
-            core.info(`Cache saved with key: ${primaryKey}`);
-        }
-        catch (error) {
-            if (error.name === cache.ValidationError.name) {
-                throw error;
-            }
-            else if (error.name === cache.ReserveCacheError.name) {
-                core.info(error.message);
-            }
-            else {
-                utils.logWarning(error.message);
-            }
-        }
-    });
-}
-exports.default = save;
-
-
-/***/ }),
+/* 258 */,
 /* 259 */,
 /* 260 */,
 /* 261 */,
@@ -10492,7 +10443,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* 321 */,
 /* 322 */,
 /* 323 */,
-/* 324 */,
+/* 324 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ * Copyright (c) 2018, Salesforce.com, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * 3. Neither the name of Salesforce.com nor the names of its contributors may
+ * be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
+const psl = __webpack_require__(750);
+
+function getPublicSuffix(domain) {
+  return psl.get(domain);
+}
+
+exports.getPublicSuffix = getPublicSuffix;
+
+
+/***/ }),
 /* 325 */,
 /* 326 */,
 /* 327 */
@@ -11046,7 +11041,40 @@ exports.NoopSpan = NoopSpan;
 //# sourceMappingURL=NoopSpan.js.map
 
 /***/ }),
-/* 341 */,
+/* 341 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const constants_1 = __webpack_require__(558);
+function getCacheKey() {
+    return core.getInput(constants_1.Inputs.Key, { required: true });
+}
+exports.default = getCacheKey;
+
+
+/***/ }),
 /* 342 */,
 /* 343 */
 /***/ (function(module) {
@@ -36056,7 +36084,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const punycode = __webpack_require__(213);
 const urlParse = __webpack_require__(835).parse;
 const util = __webpack_require__(669);
-const pubsuffix = __webpack_require__(562);
+const pubsuffix = __webpack_require__(324);
 const Store = __webpack_require__(338).Store;
 const MemoryCookieStore = __webpack_require__(332).MemoryCookieStore;
 const pathMatch = __webpack_require__(348).pathMatch;
@@ -43295,44 +43323,69 @@ exports.Context = Context;
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
-/*!
- * Copyright (c) 2018, Salesforce.com, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * 3. Neither the name of Salesforce.com nor the names of its contributors may
- * be used to endorse or promote products derived from this software without
- * specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
 
-const psl = __webpack_require__(750);
-
-function getPublicSuffix(domain) {
-  return psl.get(domain);
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const cache = __importStar(__webpack_require__(742));
+const actionUtils_1 = __webpack_require__(443);
+const getCacheKey_1 = __importDefault(__webpack_require__(341));
+const getCachePaths_1 = __importDefault(__webpack_require__(97));
+const validate_1 = __importDefault(__webpack_require__(190));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            validate_1.default();
+            const primaryKey = getCacheKey_1.default();
+            actionUtils_1.setPrimaryKeyOutput(primaryKey);
+            const cachePaths = getCachePaths_1.default();
+            const cacheEntry = yield cache.getCacheEntry(cachePaths, primaryKey);
+            if (cacheEntry !== null) {
+                core.info(`✅ Cache AVAILABLE for input key: ${primaryKey}`);
+                actionUtils_1.setCacheHitOutput(true);
+            }
+            else {
+                core.info(`❌ Cache MISSING for input key: ${primaryKey}`);
+                actionUtils_1.setCacheHitOutput(false);
+            }
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+    });
 }
-
-exports.getPublicSuffix = getPublicSuffix;
+run();
+exports.default = run;
 
 
 /***/ }),
@@ -47462,78 +47515,7 @@ exports.default = _default;
 /* 678 */,
 /* 679 */,
 /* 680 */,
-/* 681 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const utils = __importStar(__webpack_require__(443));
-const constants_1 = __webpack_require__(558);
-const save_1 = __importDefault(__webpack_require__(258));
-const validate_1 = __importDefault(__webpack_require__(190));
-// Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
-// @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
-// throw an uncaught exception.  Instead of failing this action, just warn.
-process.on("uncaughtException", e => utils.logWarning(e.message));
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            validate_1.default();
-            // Inputs are re-evaluted before the post action, so we want the original key used for restore
-            const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
-            if (!primaryKey) {
-                throw new Error(`Error retrieving key from state.`);
-            }
-            const state = utils.getCacheState();
-            if (utils.isExactKeyMatch(primaryKey, state)) {
-                core.info(`Cache hit occurred on the primary key ${primaryKey}, not saving cache.`);
-                return;
-            }
-            yield save_1.default(primaryKey);
-        }
-        catch (error) {
-            utils.logWarning(error.message);
-        }
-    });
-}
-run();
-exports.default = run;
-
-
-/***/ }),
+/* 681 */,
 /* 682 */,
 /* 683 */
 /***/ (function(module) {

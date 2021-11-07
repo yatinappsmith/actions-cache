@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(778);
+/******/ 		return __webpack_require__(14);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -1013,7 +1013,70 @@ class ExecState extends events.EventEmitter {
 /* 11 */,
 /* 12 */,
 /* 13 */,
-/* 14 */,
+/* 14 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const utils = __importStar(__webpack_require__(443));
+const getCacheKey_1 = __importDefault(__webpack_require__(341));
+const save_1 = __importDefault(__webpack_require__(258));
+const validate_1 = __importDefault(__webpack_require__(190));
+// Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
+// @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
+// throw an uncaught exception.  Instead of failing this action, just warn.
+process.on("uncaughtException", e => utils.logWarning(e.message));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            validate_1.default();
+            // Get the primary key from inputs. On correct usage, this will be the
+            // output from either the getCacheKey, check or read actions.
+            const primaryKey = getCacheKey_1.default();
+            yield save_1.default(primaryKey);
+        }
+        catch (error) {
+            utils.logWarning(error.message);
+        }
+    });
+}
+run();
+exports.default = run;
+
+
+/***/ }),
 /* 15 */,
 /* 16 */
 /***/ (function(module) {
@@ -5143,45 +5206,33 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //# sourceMappingURL=ObserverResult.js.map
 
 /***/ }),
-/* 190 */,
+/* 190 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const actionUtils_1 = __webpack_require__(443);
+const constants_1 = __webpack_require__(558);
+function validate() {
+    if (actionUtils_1.isGhes()) {
+        throw new Error("Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details");
+    }
+    // Validate inputs, this can cause task failure
+    if (!actionUtils_1.isValidEvent()) {
+        throw new Error(`Event Validation Error: The event type ${process.env[constants_1.Events.Key]} is not supported because it's not tied to a branch or tag ref.`);
+    }
+}
+exports.default = validate;
+
+
+/***/ }),
 /* 191 */,
 /* 192 */,
 /* 193 */,
 /* 194 */,
 /* 195 */,
-/* 196 */
-/***/ (function(__unusedmodule, exports) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.RefKey = exports.Events = exports.State = exports.Outputs = exports.Inputs = void 0;
-var Inputs;
-(function (Inputs) {
-    Inputs["Key"] = "key";
-    Inputs["Path"] = "path";
-    Inputs["RestoreKeys"] = "restore-keys";
-    Inputs["UploadChunkSize"] = "upload-chunk-size";
-})(Inputs = exports.Inputs || (exports.Inputs = {}));
-var Outputs;
-(function (Outputs) {
-    Outputs["CacheHit"] = "cache-hit";
-})(Outputs = exports.Outputs || (exports.Outputs = {}));
-var State;
-(function (State) {
-    State["CachePrimaryKey"] = "CACHE_KEY";
-    State["CacheMatchedKey"] = "CACHE_RESULT";
-})(State = exports.State || (exports.State = {}));
-var Events;
-(function (Events) {
-    Events["Key"] = "GITHUB_EVENT_NAME";
-    Events["Push"] = "push";
-    Events["PullRequest"] = "pull_request";
-})(Events = exports.Events || (exports.Events = {}));
-exports.RefKey = "GITHUB_REF";
-
-
-/***/ }),
+/* 196 */,
 /* 197 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -6927,7 +6978,72 @@ exports.default = _default;
 
 
 /***/ }),
-/* 258 */,
+/* 258 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const cache = __importStar(__webpack_require__(742));
+const utils = __importStar(__webpack_require__(443));
+const constants_1 = __webpack_require__(558);
+function save(primaryKey) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const cachePaths = utils.getInputAsArray(constants_1.Inputs.Path, {
+            required: true
+        });
+        try {
+            yield cache.saveCache(cachePaths, primaryKey, {
+                uploadChunkSize: utils.getInputAsInt(constants_1.Inputs.UploadChunkSize)
+            });
+            core.info(`Cache saved with key: ${primaryKey}`);
+        }
+        catch (error) {
+            if (error.name === cache.ValidationError.name) {
+                throw error;
+            }
+            else if (error.name === cache.ReserveCacheError.name) {
+                core.info(error.message);
+            }
+            else {
+                utils.logWarning(error.message);
+            }
+        }
+    });
+}
+exports.default = save;
+
+
+/***/ }),
 /* 259 */,
 /* 260 */,
 /* 261 */,
@@ -10993,7 +11109,40 @@ exports.NoopSpan = NoopSpan;
 //# sourceMappingURL=NoopSpan.js.map
 
 /***/ }),
-/* 341 */,
+/* 341 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const constants_1 = __webpack_require__(558);
+function getCacheKey() {
+    return core.getInput(constants_1.Inputs.Key, { required: true });
+}
+exports.default = getCacheKey;
+
+
+/***/ }),
 /* 342 */,
 /* 343 */
 /***/ (function(module) {
@@ -38434,9 +38583,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getInputAsInt = exports.getInputAsArray = exports.isValidEvent = exports.logWarning = exports.getCacheState = exports.setOutputAndState = exports.setCacheHitOutput = exports.setCacheState = exports.isExactKeyMatch = exports.isGhes = void 0;
+exports.getInputAsInt = exports.getInputAsArray = exports.isValidEvent = exports.logWarning = exports.getCacheState = exports.setOutputAndState = exports.setPrimaryKeyOutput = exports.setCacheHitOutput = exports.setCacheState = exports.isExactKeyMatch = exports.isGhes = void 0;
 const core = __importStar(__webpack_require__(470));
-const constants_1 = __webpack_require__(196);
+const constants_1 = __webpack_require__(558);
 function isGhes() {
     const ghUrl = new URL(process.env["GITHUB_SERVER_URL"] || "https://github.com");
     return ghUrl.hostname.toUpperCase() !== "GITHUB.COM";
@@ -38457,6 +38606,10 @@ function setCacheHitOutput(isCacheHit) {
     core.setOutput(constants_1.Outputs.CacheHit, isCacheHit.toString());
 }
 exports.setCacheHitOutput = setCacheHitOutput;
+function setPrimaryKeyOutput(primaryKey) {
+    core.setOutput(constants_1.Outputs.PrimaryKey, primaryKey);
+}
+exports.setPrimaryKeyOutput = setPrimaryKeyOutput;
 function setOutputAndState(key, cacheKey) {
     setCacheHitOutput(isExactKeyMatch(key, cacheKey));
     // Store the matched cache key if it exists
@@ -42870,7 +43023,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 /***/ }),
 /* 557 */,
-/* 558 */,
+/* 558 */
+/***/ (function(__unusedmodule, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.RefKey = exports.Events = exports.State = exports.Outputs = exports.Inputs = void 0;
+var Inputs;
+(function (Inputs) {
+    Inputs["Key"] = "key";
+    Inputs["Path"] = "path";
+    Inputs["RestoreKeys"] = "restore-keys";
+    Inputs["UploadChunkSize"] = "upload-chunk-size";
+})(Inputs = exports.Inputs || (exports.Inputs = {}));
+var Outputs;
+(function (Outputs) {
+    Outputs["CacheHit"] = "cache-hit";
+    Outputs["PrimaryKey"] = "primary-key";
+})(Outputs = exports.Outputs || (exports.Outputs = {}));
+var State;
+(function (State) {
+    State["CachePrimaryKey"] = "CACHE_KEY";
+    State["CacheMatchedKey"] = "CACHE_RESULT";
+})(State = exports.State || (exports.State = {}));
+var Events;
+(function (Events) {
+    Events["Key"] = "GITHUB_EVENT_NAME";
+    Events["Push"] = "push";
+    Events["PullRequest"] = "pull_request";
+})(Events = exports.Events || (exports.Events = {}));
+exports.RefKey = "GITHUB_REF";
+
+
+/***/ }),
 /* 559 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
 
@@ -49488,98 +49674,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 /* 775 */,
 /* 776 */,
 /* 777 */,
-/* 778 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const cache = __importStar(__webpack_require__(742));
-const constants_1 = __webpack_require__(196);
-const utils = __importStar(__webpack_require__(443));
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            if (utils.isGhes()) {
-                utils.logWarning("Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details");
-                utils.setCacheHitOutput(false);
-                return;
-            }
-            // Validate inputs, this can cause task failure
-            if (!utils.isValidEvent()) {
-                utils.logWarning(`Event Validation Error: The event type ${process.env[constants_1.Events.Key]} is not supported because it's not tied to a branch or tag ref.`);
-                return;
-            }
-            const primaryKey = core.getInput(constants_1.Inputs.Key, { required: true });
-            core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
-            const restoreKeys = utils.getInputAsArray(constants_1.Inputs.RestoreKeys);
-            const cachePaths = utils.getInputAsArray(constants_1.Inputs.Path, {
-                required: true
-            });
-            try {
-                const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
-                if (!cacheKey) {
-                    core.info(`Cache not found for input keys: ${[
-                        primaryKey,
-                        ...restoreKeys
-                    ].join(", ")}`);
-                    return;
-                }
-                // Store the matched cache key
-                utils.setCacheState(cacheKey);
-                const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
-                utils.setCacheHitOutput(isExactKeyMatch);
-                core.info(`Cache restored from key: ${cacheKey}`);
-            }
-            catch (error) {
-                if (error.name === cache.ValidationError.name) {
-                    throw error;
-                }
-                else {
-                    utils.logWarning(error.message);
-                    utils.setCacheHitOutput(false);
-                }
-            }
-        }
-        catch (error) {
-            core.setFailed(error.message);
-        }
-    });
-}
-run();
-exports.default = run;
-
-
-/***/ }),
+/* 778 */,
 /* 779 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 

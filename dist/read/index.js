@@ -34,7 +34,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(681);
+/******/ 		return __webpack_require__(637);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -2924,7 +2924,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 
 /***/ }),
 /* 96 */,
-/* 97 */,
+/* 97 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const actionUtils_1 = __webpack_require__(443);
+const constants_1 = __webpack_require__(558);
+function getCachePaths() {
+    return actionUtils_1.getInputAsArray(constants_1.Inputs.Path, {
+        required: true
+    });
+}
+exports.default = getCachePaths;
+
+
+/***/ }),
 /* 98 */,
 /* 99 */,
 /* 100 */,
@@ -6915,72 +6931,7 @@ exports.default = _default;
 
 
 /***/ }),
-/* 258 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const cache = __importStar(__webpack_require__(742));
-const utils = __importStar(__webpack_require__(443));
-const constants_1 = __webpack_require__(558);
-function save(primaryKey) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const cachePaths = utils.getInputAsArray(constants_1.Inputs.Path, {
-            required: true
-        });
-        try {
-            yield cache.saveCache(cachePaths, primaryKey, {
-                uploadChunkSize: utils.getInputAsInt(constants_1.Inputs.UploadChunkSize)
-            });
-            core.info(`Cache saved with key: ${primaryKey}`);
-        }
-        catch (error) {
-            if (error.name === cache.ValidationError.name) {
-                throw error;
-            }
-            else if (error.name === cache.ReserveCacheError.name) {
-                core.info(error.message);
-            }
-            else {
-                utils.logWarning(error.message);
-            }
-        }
-    });
-}
-exports.default = save;
-
-
-/***/ }),
+/* 258 */,
 /* 259 */,
 /* 260 */,
 /* 261 */,
@@ -10385,7 +10336,40 @@ function expand(str, isTop) {
 /* 307 */,
 /* 308 */,
 /* 309 */,
-/* 310 */,
+/* 310 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const utils = __importStar(__webpack_require__(443));
+const constants_1 = __webpack_require__(558);
+function getRestoreKeys() {
+    return utils.getInputAsArray(constants_1.Inputs.RestoreKeys);
+}
+exports.default = getRestoreKeys;
+
+
+/***/ }),
 /* 311 */,
 /* 312 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
@@ -11046,7 +11030,40 @@ exports.NoopSpan = NoopSpan;
 //# sourceMappingURL=NoopSpan.js.map
 
 /***/ }),
-/* 341 */,
+/* 341 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const constants_1 = __webpack_require__(558);
+function getCacheKey() {
+    return core.getInput(constants_1.Inputs.Key, { required: true });
+}
+exports.default = getCacheKey;
+
+
+/***/ }),
 /* 342 */,
 /* 343 */
 /***/ (function(module) {
@@ -11488,7 +11505,87 @@ exports.unregisterGlobal = unregisterGlobal;
 /* 364 */,
 /* 365 */,
 /* 366 */,
-/* 367 */,
+/* 367 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const cache = __importStar(__webpack_require__(742));
+const utils = __importStar(__webpack_require__(443));
+const constants_1 = __webpack_require__(558);
+const getCacheKey_1 = __importDefault(__webpack_require__(341));
+const getCachePaths_1 = __importDefault(__webpack_require__(97));
+const getRestoreKeys_1 = __importDefault(__webpack_require__(310));
+function read() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const primaryKey = getCacheKey_1.default();
+        core.saveState(constants_1.State.CachePrimaryKey, primaryKey);
+        utils.setPrimaryKeyOutput(primaryKey);
+        const restoreKeys = getRestoreKeys_1.default();
+        const cachePaths = getCachePaths_1.default();
+        try {
+            const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
+            if (!cacheKey) {
+                core.info(`Cache not found for input keys: ${[
+                    primaryKey,
+                    ...restoreKeys
+                ].join(", ")}`);
+                return;
+            }
+            // Store the matched cache key
+            utils.setCacheState(cacheKey);
+            const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
+            utils.setCacheHitOutput(isExactKeyMatch);
+            core.info(`Cache restored from key: ${cacheKey}`);
+        }
+        catch (error) {
+            if (error.name === cache.ValidationError.name) {
+                throw error;
+            }
+            else {
+                utils.logWarning(error.message);
+                utils.setCacheHitOutput(false);
+            }
+        }
+    });
+}
+exports.default = read;
+
+
+/***/ }),
 /* 368 */,
 /* 369 */,
 /* 370 */,
@@ -44966,7 +45063,62 @@ module.exports = require("net");
 /* 634 */,
 /* 635 */,
 /* 636 */,
-/* 637 */,
+/* 637 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const read_1 = __importDefault(__webpack_require__(367));
+const validate_1 = __importDefault(__webpack_require__(190));
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            validate_1.default();
+            yield read_1.default();
+        }
+        catch (error) {
+            core.setFailed(error.message);
+        }
+    });
+}
+run();
+exports.default = run;
+
+
+/***/ }),
 /* 638 */,
 /* 639 */
 /***/ (function(module, __unusedexports, __webpack_require__) {
@@ -47462,78 +47614,7 @@ exports.default = _default;
 /* 678 */,
 /* 679 */,
 /* 680 */,
-/* 681 */
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const core = __importStar(__webpack_require__(470));
-const utils = __importStar(__webpack_require__(443));
-const constants_1 = __webpack_require__(558);
-const save_1 = __importDefault(__webpack_require__(258));
-const validate_1 = __importDefault(__webpack_require__(190));
-// Catch and log any unhandled exceptions.  These exceptions can leak out of the uploadChunk method in
-// @actions/toolkit when a failed upload closes the file descriptor causing any in-process reads to
-// throw an uncaught exception.  Instead of failing this action, just warn.
-process.on("uncaughtException", e => utils.logWarning(e.message));
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            validate_1.default();
-            // Inputs are re-evaluted before the post action, so we want the original key used for restore
-            const primaryKey = core.getState(constants_1.State.CachePrimaryKey);
-            if (!primaryKey) {
-                throw new Error(`Error retrieving key from state.`);
-            }
-            const state = utils.getCacheState();
-            if (utils.isExactKeyMatch(primaryKey, state)) {
-                core.info(`Cache hit occurred on the primary key ${primaryKey}, not saving cache.`);
-                return;
-            }
-            yield save_1.default(primaryKey);
-        }
-        catch (error) {
-            utils.logWarning(error.message);
-        }
-    });
-}
-run();
-exports.default = run;
-
-
-/***/ }),
+/* 681 */,
 /* 682 */,
 /* 683 */
 /***/ (function(module) {
