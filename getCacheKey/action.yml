@@ -10,7 +10,7 @@ outputs:
     description: 'The primary key that should be used when saving the cache.'
 runs:
   using: 'node12'
-  main: 'dist/getCacheKey/index.js'
+  main: '../dist/getCacheKey/index.js'
 branding:
   icon: 'archive'
   color: 'gray-dark'

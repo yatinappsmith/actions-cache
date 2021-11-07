@@ -15,7 +15,7 @@ outputs:
     description: 'The primary key that should be used when saving the cache.'
 runs:
   using: 'node12'
-  main: 'dist/check/index.js'
+  main: '../dist/check/index.js'
 branding:
   icon: 'archive'
   color: 'gray-dark'
