@@ -1,0 +1,16 @@
+name: 'Cache > Get cache key'
+description: 'Generate and outputs the current cache key. This can be useful to generate a key before making changes to the codebase that may affect your key when you're using hashFiles, e.g. before installing dependencies.'
+author: 'Martijn Hols (forked from the GitHub cache action)'
+inputs:
+  key:
+    description: 'An explicit key for the cache'
+    required: true
+outputs:
+  primary-key:
+    description: 'The primary key that should be used when saving the cache.'
+runs:
+  using: 'node12'
+  main: 'dist/getCacheKey/index.js'
+branding:
+  icon: 'archive'
+  color: 'gray-dark'

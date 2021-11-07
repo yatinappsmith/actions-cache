@@ -1,0 +1,21 @@
+name: 'Cache > Check'
+description: 'Check if a cache artifact exists'
+author: 'Martijn Hols (forked from the GitHub cache action)'
+inputs:
+  path:
+    description: 'The list of files, directories, and wildcard patterns that was used when saving the cache'
+    required: true
+  key:
+    description: 'An explicit key for the cache'
+    required: true
+outputs:
+  cache-hit:
+    description: 'A boolean value to indicate an exact match was found for the primary key'
+  primary-key:
+    description: 'The primary key that should be used when saving the cache.'
+runs:
+  using: 'node12'
+  main: 'dist/check/index.js'
+branding:
+  icon: 'archive'
+  color: 'gray-dark'

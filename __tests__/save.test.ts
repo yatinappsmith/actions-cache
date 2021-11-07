@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
 import * as cache from "@martijnhols/actions-cache";
 
-import { Events, Inputs, RefKey } from "../src/constants";
 import run from "../src/save";
 import * as actionUtils from "../src/utils/actionUtils";
+import { Events, Inputs, RefKey, State } from "../src/utils/constants";
 import * as testUtils from "../src/utils/testUtils";
 
 jest.mock("@actions/core");
@@ -72,32 +72,6 @@ test("save with invalid event outputs warning", async () => {
     expect(logWarningMock).toHaveBeenCalledWith(
         `Event Validation Error: The event type ${invalidEvent} is not supported because it's not tied to a branch or tag ref.`
     );
-    expect(failedMock).toHaveBeenCalledTimes(0);
-});
-
-test("save with no primary key in state outputs warning", async () => {
-    const logWarningMock = jest.spyOn(actionUtils, "logWarning");
-    const failedMock = jest.spyOn(core, "setFailed");
-
-    const savedCacheKey = "Linux-node-bb828da54c148048dd17899ba9fda624811cfb43";
-    jest.spyOn(core, "getState")
-        // Cache Entry State
-        .mockImplementationOnce(() => {
-            return savedCacheKey;
-        })
-        // Cache Key State
-        .mockImplementationOnce(() => {
-            return "";
-        });
-    const saveCacheMock = jest.spyOn(cache, "saveCache");
-
-    await run();
-
-    expect(saveCacheMock).toHaveBeenCalledTimes(0);
-    expect(logWarningMock).toHaveBeenCalledWith(
-        `Error retrieving key from state.`
-    );
-    expect(logWarningMock).toHaveBeenCalledTimes(1);
     expect(failedMock).toHaveBeenCalledTimes(0);
 });
 
@@ -170,6 +144,36 @@ test("save with missing input outputs warning", async () => {
     expect(failedMock).toHaveBeenCalledTimes(0);
 });
 
+test("save with no primary key in state outputs warning", async () => {
+    const logWarningMock = jest.spyOn(actionUtils, "logWarning");
+    const failedMock = jest.spyOn(core, "setFailed");
+
+    const savedCacheKey = "Linux-node-bb828da54c148048dd17899ba9fda624811cfb43";
+    jest.spyOn(core, "getState").mockImplementation((name: string) => {
+        switch (name) {
+            case State.CachePrimaryKey:
+                return "";
+            case State.CacheMatchedKey:
+                return savedCacheKey;
+            default:
+                throw new Error("State not supported in test");
+        }
+    });
+    const saveCacheMock = jest.spyOn(cache, "saveCache");
+
+    const inputPath = "node_modules";
+    testUtils.setInput(Inputs.Path, inputPath);
+
+    await run();
+
+    expect(saveCacheMock).toHaveBeenCalledTimes(0);
+    expect(logWarningMock).toHaveBeenCalledWith(
+        `Error retrieving key from state.`
+    );
+    expect(logWarningMock).toHaveBeenCalledTimes(1);
+    expect(failedMock).toHaveBeenCalledTimes(0);
+});
+
 test("save with large cache outputs warning", async () => {
     const logWarningMock = jest.spyOn(actionUtils, "logWarning");
     const failedMock = jest.spyOn(core, "setFailed");
@@ -177,15 +181,16 @@ test("save with large cache outputs warning", async () => {
     const primaryKey = "Linux-node-bb828da54c148048dd17899ba9fda624811cfb43";
     const savedCacheKey = "Linux-node-";
 
-    jest.spyOn(core, "getState")
-        // Cache Entry State
-        .mockImplementationOnce(() => {
-            return savedCacheKey;
-        })
-        // Cache Key State
-        .mockImplementationOnce(() => {
-            return primaryKey;
-        });
+    jest.spyOn(core, "getState").mockImplementation((name: string) => {
+        switch (name) {
+            case State.CachePrimaryKey:
+                return primaryKey;
+            case State.CacheMatchedKey:
+                return savedCacheKey;
+            default:
+                throw new Error("State not supported in test");
+        }
+    });
 
     const inputPath = "node_modules";
     testUtils.setInput(Inputs.Path, inputPath);
@@ -222,15 +227,16 @@ test("save with reserve cache failure outputs warning", async () => {
     const primaryKey = "Linux-node-bb828da54c148048dd17899ba9fda624811cfb43";
     const savedCacheKey = "Linux-node-";
 
-    jest.spyOn(core, "getState")
-        // Cache Entry State
-        .mockImplementationOnce(() => {
-            return savedCacheKey;
-        })
-        // Cache Key State
-        .mockImplementationOnce(() => {
-            return primaryKey;
-        });
+    jest.spyOn(core, "getState").mockImplementation((name: string) => {
+        switch (name) {
+            case State.CachePrimaryKey:
+                return primaryKey;
+            case State.CacheMatchedKey:
+                return savedCacheKey;
+            default:
+                throw new Error("State not supported in test");
+        }
+    });
 
     const inputPath = "node_modules";
     testUtils.setInput(Inputs.Path, inputPath);
@@ -270,15 +276,16 @@ test("save with server error outputs warning", async () => {
     const primaryKey = "Linux-node-bb828da54c148048dd17899ba9fda624811cfb43";
     const savedCacheKey = "Linux-node-";
 
-    jest.spyOn(core, "getState")
-        // Cache Entry State
-        .mockImplementationOnce(() => {
-            return savedCacheKey;
-        })
-        // Cache Key State
-        .mockImplementationOnce(() => {
-            return primaryKey;
-        });
+    jest.spyOn(core, "getState").mockImplementation((name: string) => {
+        switch (name) {
+            case State.CachePrimaryKey:
+                return primaryKey;
+            case State.CacheMatchedKey:
+                return savedCacheKey;
+            default:
+                throw new Error("State not supported in test");
+        }
+    });
 
     const inputPath = "node_modules";
     testUtils.setInput(Inputs.Path, inputPath);
@@ -310,15 +317,16 @@ test("save with valid inputs uploads a cache", async () => {
     const primaryKey = "Linux-node-bb828da54c148048dd17899ba9fda624811cfb43";
     const savedCacheKey = "Linux-node-";
 
-    jest.spyOn(core, "getState")
-        // Cache Entry State
-        .mockImplementationOnce(() => {
-            return savedCacheKey;
-        })
-        // Cache Key State
-        .mockImplementationOnce(() => {
-            return primaryKey;
-        });
+    jest.spyOn(core, "getState").mockImplementation((name: string) => {
+        switch (name) {
+            case State.CachePrimaryKey:
+                return primaryKey;
+            case State.CacheMatchedKey:
+                return savedCacheKey;
+            default:
+                throw new Error("State not supported in test");
+        }
+    });
 
     const inputPath = "node_modules";
     testUtils.setInput(Inputs.Path, inputPath);

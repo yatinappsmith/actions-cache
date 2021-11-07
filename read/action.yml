@@ -1,5 +1,5 @@
-name: 'Cache'
-description: 'Cache artifacts like dependencies and build outputs to improve workflow execution time'
+name: 'Cache > Read'
+description: 'Read cache entries and place the files in the provided paths.'
 author: 'Martijn Hols (forked from the GitHub cache action)'
 inputs:
   path:
@@ -11,17 +11,14 @@ inputs:
   restore-keys:
     description: 'An ordered list of keys to use for restoring the cache if no cache hit occurred for key'
     required: false
-  upload-chunk-size:
-    description: 'The chunk size used to split up large files during upload, in bytes'
-    required: false
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'
+  primary-key:
+    description: 'The primary key that should be used when saving the cache.'
 runs:
   using: 'node12'
   main: 'dist/read/index.js'
-  post: 'dist/save/index.js'
-  post-if: 'success()'
 branding:
   icon: 'archive'
   color: 'gray-dark'

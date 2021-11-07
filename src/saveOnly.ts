@@ -1,7 +1,5 @@
-import * as core from "@actions/core";
-
 import * as utils from "./utils/actionUtils";
-import { State } from "./utils/constants";
+import getCacheKey from "./utils/getCacheKey";
 import save from "./utils/save";
 import validate from "./utils/validate";
 
@@ -14,21 +12,9 @@ async function run(): Promise<void> {
     try {
         validate();
 
-        // Inputs are re-evaluted before the post action, so we want the original key used for restore
-        const primaryKey = core.getState(State.CachePrimaryKey);
-        if (!primaryKey) {
-            throw new Error(`Error retrieving key from state.`);
-        }
-
-        const state = utils.getCacheState();
-
-        if (utils.isExactKeyMatch(primaryKey, state)) {
-            core.info(
-                `Cache hit occurred on the primary key ${primaryKey}, not saving cache.`
-            );
-            return;
-        }
-
+        // Get the primary key from inputs. On correct usage, this will be the
+        // output from either the getCacheKey, check or read actions.
+        const primaryKey = getCacheKey();
         await save(primaryKey);
     } catch (error) {
         utils.logWarning(error.message);

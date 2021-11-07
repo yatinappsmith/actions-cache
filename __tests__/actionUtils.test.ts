@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 
-import { Events, Outputs, RefKey, State } from "../src/constants";
 import * as actionUtils from "../src/utils/actionUtils";
+import { Events, Outputs, RefKey, State } from "../src/utils/constants";
 import * as testUtils from "../src/utils/testUtils";
 
 jest.mock("@actions/core");

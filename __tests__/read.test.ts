@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
 import * as cache from "@martijnhols/actions-cache";
 
-import { Events, Inputs, RefKey } from "../src/constants";
-import run from "../src/restore";
+import run from "../src/read";
 import * as actionUtils from "../src/utils/actionUtils";
+import { Events, Inputs, RefKey } from "../src/utils/constants";
 import * as testUtils from "../src/utils/testUtils";
 
 jest.mock("../src/utils/actionUtils");
@@ -42,32 +42,29 @@ afterEach(() => {
     delete process.env[RefKey];
 });
 
-test("restore with invalid event outputs warning", async () => {
-    const logWarningMock = jest.spyOn(actionUtils, "logWarning");
+test("restore with invalid event fails", async () => {
     const failedMock = jest.spyOn(core, "setFailed");
     const invalidEvent = "commit_comment";
     process.env[Events.Key] = invalidEvent;
     delete process.env[RefKey];
     await run();
-    expect(logWarningMock).toHaveBeenCalledWith(
+    expect(failedMock).toHaveBeenCalledWith(
         `Event Validation Error: The event type ${invalidEvent} is not supported because it's not tied to a branch or tag ref.`
     );
-    expect(failedMock).toHaveBeenCalledTimes(0);
 });
 
-test("restore on GHES should no-op", async () => {
+test("restore on GHES fails", async () => {
     jest.spyOn(actionUtils, "isGhes").mockImplementation(() => true);
 
-    const logWarningMock = jest.spyOn(actionUtils, "logWarning");
+    const failedMock = jest.spyOn(core, "setFailed");
     const restoreCacheMock = jest.spyOn(cache, "restoreCache");
     const setCacheHitOutputMock = jest.spyOn(actionUtils, "setCacheHitOutput");
 
     await run();
 
     expect(restoreCacheMock).toHaveBeenCalledTimes(0);
-    expect(setCacheHitOutputMock).toHaveBeenCalledTimes(1);
-    expect(setCacheHitOutputMock).toHaveBeenCalledWith(false);
-    expect(logWarningMock).toHaveBeenCalledWith(
+    expect(setCacheHitOutputMock).toHaveBeenCalledTimes(0);
+    expect(failedMock).toHaveBeenCalledWith(
         "Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details"
     );
 });

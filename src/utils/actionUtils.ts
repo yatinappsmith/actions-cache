@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 
-import { Outputs, RefKey, State } from "../constants";
+import { Outputs, RefKey, State } from "./constants";
 
 export function isGhes(): boolean {
     const ghUrl = new URL(
@@ -24,6 +24,10 @@ export function setCacheState(state: string): void {
 
 export function setCacheHitOutput(isCacheHit: boolean): void {
     core.setOutput(Outputs.CacheHit, isCacheHit.toString());
+}
+
+export function setPrimaryKeyOutput(primaryKey: string): void {
+    core.setOutput(Outputs.PrimaryKey, primaryKey);
 }
 
 export function setOutputAndState(key: string, cacheKey?: string): void {
