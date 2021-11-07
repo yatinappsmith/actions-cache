@@ -6,6 +6,7 @@ import { State } from "./constants";
 import getCacheKey from "./getCacheKey";
 import getCachePaths from "./getCachePaths";
 import getRestoreKeys from "./getRestoreKeys";
+import isCacheRequired from "./isCacheRequired";
 
 export default async function read(): Promise<void> {
     const primaryKey = getCacheKey();
@@ -22,13 +23,16 @@ export default async function read(): Promise<void> {
             restoreKeys
         );
         if (!cacheKey) {
-            core.info(
-                `Cache not found for input keys: ${[
-                    primaryKey,
-                    ...restoreKeys
-                ].join(", ")}`
-            );
-            return;
+            const message = `Cache not found for input keys: ${[
+                primaryKey,
+                ...restoreKeys
+            ].join(", ")}`;
+            if (isCacheRequired()) {
+                throw new Error(message);
+            } else {
+                core.info(message);
+                return;
+            }
         }
 
         // Store the matched cache key
