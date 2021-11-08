@@ -4,10 +4,10 @@ These actions allow caching dependencies and build outputs to eliminate duplicat
 
 The following actions are available:
 
-- `martijnhols/actions-cache@main`
-- `martijnhols/actions-cache/restore@main`
-- `martijnhols/actions-cache/save@main`
-- `martijnhols/actions-cache/check@main`
+- `martijnhols/actions-cache@v3`
+- `martijnhols/actions-cache/restore@v3`
+- `martijnhols/actions-cache/save@v3`
+- `martijnhols/actions-cache/check@v3`
 
 While this is a fork, there are currently no plans to merge this into GitHub's [actions/cache](https://github.com/actions/cache) since GitHub does not appear to be reviewing [P](https://github.com/actions/cache/pull/466)[R](https://github.com/actions/cache/pull/474)[s](https://github.com/actions/toolkit/pull/659) and so making this mergeable would be a waste of time. This repository will be available on its own.
 
@@ -16,7 +16,7 @@ While this is a fork, there are currently no plans to merge this into GitHub's [
 
 ## Actions
 
-### martijnhols/actions-cache@main
+### martijnhols/actions-cache
 
 This is the base action largely matching GitHub's [actions/cache](https://github.com/actions/cache). Under the hood this calls the `restore` action where you place the action, and the `save` action just before the job finishes.
 
@@ -36,7 +36,7 @@ This can be used for caching a step such as installing dependencies which are no
 
 > See [Skipping steps based on cache-hit](#Skipping-steps-based-on-cache-hit) for info on using this output
 
-### martijnhols/actions-cache/restore@main
+### martijnhols/actions-cache/restore
 
 This action will read data from the cache and place it in at the provided path.
 
@@ -52,7 +52,7 @@ This action will read data from the cache and place it in at the provided path.
 * `cache-hit` - A boolean value to indicate an exact match was found for the key
 * `primary-key` - The primary key for restoring or saving exactly matching cache.
 
-### martijnhols/actions-cache/save@main
+### martijnhols/actions-cache/save
 
 This action will save data at the provided path to the cache.
 
@@ -63,7 +63,7 @@ This action will save data at the provided path to the cache.
 
 Tip: when combined with the `restore` or `check` action, add the `id: cache` property to the `restore`/`check` action and use `key: ${{ steps.cache.outputs.primary-key }}` in the `save` action. This ensures your cache key is not recomputed, which may otherwise lead to issues.
 
-### martijnhols/actions-cache/check@main
+### martijnhols/actions-cache/check
 
 This action will check if an exact match is available in the cache without downloading it.
 
@@ -102,7 +102,7 @@ jobs:
 
     - name: Cache node_modules
       id: cache
-      uses: martijnhols/actions-cache@main
+      uses: martijnhols/actions-cache@v3
       with:
         # Cache the node_modules folder and its contents
         path: node_modules
@@ -140,7 +140,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -156,7 +156,7 @@ jobs:
     - name: Save "node_modules" to cache
       # No need to save identical data when an exact match was found
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: node_modules
         # Re-use the primary-key from the restore action to ensure it is not recomputed. This could otherwise cause issues if our "build" step modifies files within one of the `hashFiles` directories.
@@ -186,7 +186,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -198,7 +198,7 @@ jobs:
 
     - name: Save "node_modules" to cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: node_modules
         key: ${{ steps.cache.outputs.primary-key }}
@@ -210,7 +210,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "node_modules" from cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -248,7 +248,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -260,7 +260,7 @@ jobs:
 
     - name: Save "node_modules" to cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: node_modules
         key: ${{ steps.cache.outputs.primary-key }}
@@ -272,7 +272,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "node_modules" from cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -283,7 +283,7 @@ jobs:
 
     # Notice that we do not use a "restore" in this job: the build in our imaginary project can't reuse its own build files so restoring that before building would be a waste of time.
     - name: Save "build" to cache
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: build
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches', 'src', '.babelrc') }}
@@ -295,7 +295,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "build" from cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: build
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches', 'src', '.babelrc') }}
@@ -322,7 +322,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -334,7 +334,7 @@ jobs:
 
     - name: Save "node_modules" to cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: node_modules
         key: ${{ steps.cache.outputs.primary-key }}
@@ -347,7 +347,7 @@ jobs:
 
     # Using martijnhols/actions-cache/check we check if a cache entry exists without downloading it
     - name: Check if "build" is already cached
-      uses: martijnhols/actions-cache/check@main
+      uses: martijnhols/actions-cache/check@v3
       id: cache
       with:
         path: build
@@ -356,7 +356,7 @@ jobs:
     - name: Restore "node_modules" from cache
       # Only execute if the build isn't already in cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -371,7 +371,7 @@ jobs:
     - name: Save "build" to cache
       # Only execute if the build isn't already in cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: build
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches', 'src', '.babelrc') }}
@@ -383,7 +383,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "build" from cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: build
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches', 'src', '.babelrc') }}
@@ -416,7 +416,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/restore@main
+      uses: martijnhols/actions-cache/restore@v3
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -428,7 +428,7 @@ jobs:
 
     - name: Save "node_modules" to cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/save@main
+      uses: martijnhols/actions-cache/save@v3
       with:
         path: node_modules
         key: ${{ steps.cache.outputs.primary-key }}
