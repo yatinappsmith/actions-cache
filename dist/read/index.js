@@ -11549,6 +11549,7 @@ const constants_1 = __webpack_require__(558);
 const getCacheKey_1 = __importDefault(__webpack_require__(341));
 const getCachePaths_1 = __importDefault(__webpack_require__(97));
 const getRestoreKeys_1 = __importDefault(__webpack_require__(310));
+const isCacheRequired_1 = __importDefault(__webpack_require__(734));
 function read() {
     return __awaiter(this, void 0, void 0, function* () {
         const primaryKey = getCacheKey_1.default();
@@ -11559,11 +11560,17 @@ function read() {
         try {
             const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
             if (!cacheKey) {
-                core.info(`Cache not found for input keys: ${[
+                const message = `Cache not found for input keys: ${[
                     primaryKey,
                     ...restoreKeys
-                ].join(", ")}`);
-                return;
+                ].join(", ")}`;
+                if (isCacheRequired_1.default()) {
+                    throw new Error(message);
+                }
+                else {
+                    core.info(message);
+                    return;
+                }
             }
             // Store the matched cache key
             utils.setCacheState(cacheKey);
@@ -43037,6 +43044,7 @@ var Inputs;
     Inputs["Path"] = "path";
     Inputs["RestoreKeys"] = "restore-keys";
     Inputs["UploadChunkSize"] = "upload-chunk-size";
+    Inputs["Required"] = "required";
 })(Inputs = exports.Inputs || (exports.Inputs = {}));
 var Outputs;
 (function (Outputs) {
@@ -48107,7 +48115,40 @@ function rng() {
 }
 
 /***/ }),
-/* 734 */,
+/* 734 */
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const constants_1 = __webpack_require__(558);
+function isCacheRequired() {
+    return core.getInput(constants_1.Inputs.Required, { required: false });
+}
+exports.default = isCacheRequired;
+
+
+/***/ }),
 /* 735 */
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
