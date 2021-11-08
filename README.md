@@ -9,7 +9,7 @@ The following actions are available:
 - `martijnhols/actions-cache/save@main`
 - `martijnhols/actions-cache/check@main`
 
-While this is a fork, there are currently no plans to merge this into GitHub's [actions/cache](https://github.com/actions/cache) since GitHub [does](https://github.com/actions/cache/pull/466) [not](https://github.com/actions/cache/pull/474) (appear to) [care](https://github.com/actions/toolkit/pull/659) for reviewing PRs and so making this mergeable would be a waste of time. This repository will be available on its own.
+While this is a fork, there are currently no plans to merge this into GitHub's [actions/cache](https://github.com/actions/cache) since GitHub does not appear to be reviewing [P](https://github.com/actions/cache/pull/466)[R](https://github.com/actions/cache/pull/474)[s](https://github.com/actions/toolkit/pull/659) and so making this mergeable would be a waste of time. This repository will be available on its own.
 
 - [Action documentation](#actions)
 - [Recipes](#recipes)
