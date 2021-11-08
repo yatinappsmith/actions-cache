@@ -17,6 +17,8 @@ inputs:
 outputs:
   cache-hit:
     description: 'A boolean value to indicate an exact match was found for the primary key'
+  primary-key:
+    description: 'The primary key for reading or saving exactly matching cache.'
 runs:
   using: 'node12'
   main: 'dist/read/index.js'
