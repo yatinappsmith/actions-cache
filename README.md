@@ -8,7 +8,6 @@ The following actions are available:
 - `martijnhols/actions-cache/read@main`
 - `martijnhols/actions-cache/save@main`
 - `martijnhols/actions-cache/check@main`
-- `martijnhols/actions-cache/getCacheKey@main`
 
 While this is a fork, there are currently no plans to merge this into GitHub's [actions/cache](https://github.com/actions/cache) since GitHub [does](https://github.com/actions/cache/pull/466) [not](https://github.com/actions/cache/pull/474) (appear to) [care](https://github.com/actions/toolkit/pull/659) for reviewing PRs and so making this mergeable would be a waste of time. This repository will be available on its own.
 
@@ -76,20 +75,6 @@ This action will check if an exact match is available in the cache without downl
 #### Outputs
 
 * `cache-hit` - A boolean value to indicate an exact match was found for the key
-* `primary-key` - The primary key for reading or saving exactly matching cache.
-
-### martijnhols/actions-cache/getCacheKey@main
-
-This action will evaluate the cache key for reuse in other actions.
-
-> This is essentially no different from using [`set-output`](https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions#setting-an-output-parameter), but it may be easier to use.
-
-#### Inputs
-
-* `key` - **Required** - An explicit key for restoring and saving the cache
-
-#### Outputs
-
 * `primary-key` - The primary key for reading or saving exactly matching cache.
 
 ## Recipes
