@@ -12,6 +12,9 @@ The following actions are available:
 
 While this is a fork, there are currently no plans to merge this into GitHub's [actions/cache](https://github.com/actions/cache) since GitHub [does](https://github.com/actions/cache/pull/466) [not](https://github.com/actions/cache/pull/474) (appear to) [care](https://github.com/actions/toolkit/pull/659) for reviewing PRs and so making this mergeable would be a waste of time. This repository will be available on its own.
 
+- [Action documentation](#actions)
+- [Recipes](#recipes)
+
 ## Actions
 
 ### martijnhols/actions-cache@main
@@ -63,7 +66,7 @@ Tip: add the `id: cache` property to the `read` action and use `key: ${{ steps.c
 
 ### martijnhols/actions-cache/check@main
 
-This action will check if an exact match is available in the cache.
+This action will check if an exact match is available in the cache without downloading it.
 
 #### Inputs
 
@@ -79,6 +82,8 @@ This action will check if an exact match is available in the cache.
 
 This action will evaluate the cache key for reuse in other actions.
 
+> This is essentially no different from using [`set-output`](https://docs.github.com/en/actions/learn-github-actions/workflow-commands-for-github-actions#setting-an-output-parameter), but it may be easier to use.
+
 #### Inputs
 
 * `key` - **Required** - An explicit key for restoring and saving the cache
@@ -89,14 +94,14 @@ This action will evaluate the cache key for reuse in other actions.
 
 ## Recipes
 
-These recipes are mere examples. For simplicity sake some steps (such as setup-node) are omitted.
+These recipes serve as examples. For simplicity sake some irrelevant steps (such as setup-node) are omitted.
 
 <details id="just-caching">
 <summary><a href="#just-caching">🔗</a> Just caching</summary>
 
-This caches `node_modules` folder, and only installs dependencies if the cache did not return an exact match.
+This caches `node_modules` folder. Using the [Skipping steps based on cache-hit](#skipping-steps-based-on-cache-hit) solution, this only installs dependencies if the cache did not return an exact match.
 
-If no exact match could be found, it uses a *restore-key* to restore an older cache since the tool we use (yarn) can reuse existing files.
+If no exact match could be found, it uses a *restore-key* to restore an older cache since the tool we use (yarn) can reuse existing files to save time.
 
 ```yaml
 name: Build app
@@ -134,7 +139,7 @@ jobs:
 <details id="just-caching-manual">
 <summary><a href="#just-caching-manual">🔗</a> Just caching with manual control</summary>
 
-This is behaves the same as the [Just caching](#just-caching) recipe, but uses the `read` and `save` actions manually. This has no significant benefits over using the standard action, though I prefer it for its minor readability and maintainability gains.
+This behaves the same as the [Just caching](#just-caching) recipe, but uses the `read` and `save` actions manually. This has no significant benefits over using the standard action, though I prefer it for its minor readability and maintainability improvements.
 
 ```yaml
 name: Build app
@@ -237,9 +242,9 @@ jobs:
 
 This extends the [Share cache across jobs](#share-cache) recipe.
 
-When you want to publish your build, you probably want to do this in a separate step. Using the [Share cache across jobs](#share-cache) recipe you can also reuse your build (we do this in step 1).
+When you want to publish your build, you probably want to do this in a separate step. Using the [Share cache across jobs](#share-cache) recipe you can also reuse your build (we add this in step 1).
 
-As a bonus, you can skip building the app entirely if an exact match was found (we do this in step 2). This is especially useful in monorepos, where only a few apps need to be build each run.
+As a bonus, you can skip building the app entirely if an exact match was found (we add this in step 2). This is especially useful in monorepos, where only a few apps need to be build each run.
 
 **NOTE:** Take extra care when choosing a cache key. Builds often involve many different configuration files, if you forget to add a file it may not trigger a rebuild when it is changed.
 
@@ -439,7 +444,9 @@ See [Using contexts to create cache keys](https://help.github.com/en/actions/con
 
 ## Cache Limits
 
-A repository can have up to 5GB of caches. Once the 5GB limit is reached, older caches will be evicted based on when the cache was last accessed.  Caches that are not accessed within the last week will also be evicted.
+A repository can have up to 5GB of caches. Once the 5GB limit is reached, older caches will be evicted based on when the cache was last accessed. Caches that are not accessed within the last week will also be evicted.
+
+> I have personally never encountered issues with cache being evicted. If the total cache used in your workflows approaches the 5GB limit I recommend reconsidering using cache for sharing data across jobs.
 
 ## Skipping steps based on cache-hit
 
