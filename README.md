@@ -394,6 +394,50 @@ jobs:
 ```
 </details>
 
+<details id="save-regardless-of-failure">
+<summary><a href="#save-regardless-of-failure">🔗</a> Save cache regardless of job success/failure</summary>
+
+This extends the [Just caching](#just-caching) recipe.
+
+When you have multiple build steps in a single job, you may want to save your data regardless of the job failing. In this case splitting up the cache actions like in the [Just caching with manual control](#just-caching-manual) recipe and moving the save action above your flaky build step achieves this.
+
+If you want your cache to be saved regardless of a failure during the install step, you can change the `if: steps.cache.outputs.cache-hit != 'true'` line into `if: always() && steps.cache.outputs.cache-hit != 'true'`.
+
+```yaml
+name: Build app
+
+on: push
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Restore "node_modules" from cache
+      id: cache
+      uses: martijnhols/actions-cache/restore@main
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
+        restore-keys: ${{ runner.os }}-node_modules
+
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: yarn install
+
+    - name: Save "node_modules" to cache
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: martijnhols/actions-cache/save@main
+      with:
+        path: node_modules
+        key: ${{ steps.cache.outputs.primary-key }}
+
+    - name: Run flaky tests
+      run: yarn test
+```
+</details>
+
 ## Creating a cache key
 
 A cache key can include any of the contexts, functions, literals, and operators supported by GitHub Actions.
