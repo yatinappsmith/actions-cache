@@ -60,6 +60,7 @@ This action will save data at the provided path to the cache.
 
 * `path` - **Required** - A list of files, directories, and wildcard patterns to cache and restore. See [`@actions/glob`](https://github.com/actions/toolkit/tree/main/packages/glob) for supported patterns. 
 * `key` - **Required** - An explicit key for restoring and saving the cache
+* `upload-chunk-size` - The chunk size used to split up large files during upload, in bytes
 
 Tip: when combined with the `restore` or `check` action, add the `id: cache` property to the `restore`/`check` action and use `key: ${{ steps.cache.outputs.primary-key }}` in the `save` action. This ensures your cache key is not recomputed, which may otherwise lead to issues.
 
