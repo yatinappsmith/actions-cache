@@ -1,13 +1,13 @@
 import * as core from "@actions/core";
 
-import read from "./utils/read";
+import restore from "./utils/restore";
 import validate from "./utils/validate";
 
 async function run(): Promise<void> {
     try {
         validate();
 
-        await read();
+        await restore();
     } catch (error) {
         core.setFailed(error.message);
     }

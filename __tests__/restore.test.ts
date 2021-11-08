@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import * as cache from "@martijnhols/actions-cache";
 
-import run from "../src/read";
+import run from "../src/restore";
 import * as actionUtils from "../src/utils/actionUtils";
 import { Events, Inputs, RefKey } from "../src/utils/constants";
 import * as testUtils from "../src/utils/testUtils";

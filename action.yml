@@ -21,7 +21,7 @@ outputs:
     description: 'The primary key for reading or saving exactly matching cache.'
 runs:
   using: 'node12'
-  main: 'dist/read/index.js'
+  main: 'dist/restore/index.js'
   post: 'dist/save/index.js'
   post-if: 'success()'
 branding:

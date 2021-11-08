@@ -1,4 +1,4 @@
-name: 'Cache > Read'
+name: 'Cache > Restore'
 description: 'Read cache entries and place the files in the provided paths.'
 author: 'Martijn Hols (forked from the GitHub cache action)'
 inputs:
@@ -21,7 +21,7 @@ outputs:
     description: 'The primary key that should be used when saving the cache.'
 runs:
   using: 'node12'
-  main: '../dist/read/index.js'
+  main: '../dist/restore/index.js'
 branding:
   icon: 'archive'
   color: 'gray-dark'

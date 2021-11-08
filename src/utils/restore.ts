@@ -8,7 +8,7 @@ import getCachePaths from "./getCachePaths";
 import getRestoreKeys from "./getRestoreKeys";
 import isCacheRequired from "./isCacheRequired";
 
-export default async function read(): Promise<void> {
+export default async function restore(): Promise<void> {
     const primaryKey = getCacheKey();
     core.saveState(State.CachePrimaryKey, primaryKey);
     utils.setPrimaryKeyOutput(primaryKey);

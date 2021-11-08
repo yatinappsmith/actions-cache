@@ -1,11 +1,11 @@
 # cache
 
-These actions allow caching dependencies and build outputs to eliminate duplicate work and improve workflow execution time. **The main advantage of this fork is sharing data across multiple jobs.** You do not need to use artifacts and can skip various steps, saving a lot of runtime.
+These actions allow caching dependencies and build outputs to eliminate duplicate work and improve workflow execution time. **The main advantage of this fork over the base is sharing data across multiple jobs.** You do not need to use artifacts and can skip various steps, saving as much runtime as possible.
 
 The following actions are available:
 
 - `martijnhols/actions-cache@main`
-- `martijnhols/actions-cache/read@main`
+- `martijnhols/actions-cache/restore@main`
 - `martijnhols/actions-cache/save@main`
 - `martijnhols/actions-cache/check@main`
 
@@ -18,7 +18,7 @@ While this is a fork, there are currently no plans to merge this into GitHub's [
 
 ### martijnhols/actions-cache@main
 
-This is the base action largely matching GitHub's [actions/cache](https://github.com/actions/cache). Under the hood this calls the `read` action where you place the action, and the `save` action just before the job finishes.
+This is the base action largely matching GitHub's [actions/cache](https://github.com/actions/cache). Under the hood this calls the `restore` action where you place the action, and the `save` action just before the job finishes.
 
 This can be used for caching a step such as installing dependencies which are not re-used in other jobs. If you want to reuse your data in other jobs, use one of the other actions.
 
@@ -32,11 +32,11 @@ This can be used for caching a step such as installing dependencies which are no
 #### Outputs
 
 * `cache-hit` - A boolean value to indicate an exact match was found for the key
-* `primary-key` - The primary key for reading or saving exactly matching cache.
+* `primary-key` - The primary key for restoring or saving exactly matching cache.
 
 > See [Skipping steps based on cache-hit](#Skipping-steps-based-on-cache-hit) for info on using this output
 
-### martijnhols/actions-cache/read@main
+### martijnhols/actions-cache/restore@main
 
 This action will read data from the cache and place it in at the provided path.
 
@@ -50,7 +50,7 @@ This action will read data from the cache and place it in at the provided path.
 #### Outputs
 
 * `cache-hit` - A boolean value to indicate an exact match was found for the key
-* `primary-key` - The primary key for reading or saving exactly matching cache.
+* `primary-key` - The primary key for restoring or saving exactly matching cache.
 
 ### martijnhols/actions-cache/save@main
 
@@ -61,7 +61,7 @@ This action will save data at the provided path to the cache.
 * `path` - **Required** - A list of files, directories, and wildcard patterns to cache and restore. See [`@actions/glob`](https://github.com/actions/toolkit/tree/main/packages/glob) for supported patterns. 
 * `key` - **Required** - An explicit key for restoring and saving the cache
 
-Tip: add the `id: cache` property to the `read` action and use `key: ${{ steps.cache.outputs.primary-key }}` in the `save` action. This ensures your cache key is not recomputed, which may otherwise lead to issues.
+Tip: when combined with the `restore` or `check` action, add the `id: cache` property to the `restore`/`check` action and use `key: ${{ steps.cache.outputs.primary-key }}` in the `save` action. This ensures your cache key is not recomputed, which may otherwise lead to issues.
 
 ### martijnhols/actions-cache/check@main
 
@@ -75,7 +75,7 @@ This action will check if an exact match is available in the cache without downl
 #### Outputs
 
 * `cache-hit` - A boolean value to indicate an exact match was found for the key
-* `primary-key` - The primary key for reading or saving exactly matching cache.
+* `primary-key` - The primary key for restoring or saving exactly matching cache.
 
 ## Recipes
 
@@ -124,7 +124,7 @@ jobs:
 <details id="just-caching-manual">
 <summary><a href="#just-caching-manual">🔗</a> Just caching with manual control</summary>
 
-This behaves the same as the [Just caching](#just-caching) recipe, but uses the `read` and `save` actions manually. This has no significant benefits over using the standard action, though I prefer it for its minor readability and maintainability improvements.
+This behaves the same as the [Just caching](#just-caching) recipe, but uses the `restore` and `save` actions manually. This has no significant benefits over using the standard action, though I prefer it for its minor readability and maintainability improvements.
 
 ```yaml
 name: Build app
@@ -140,7 +140,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -159,7 +159,7 @@ jobs:
       uses: martijnhols/actions-cache/save@main
       with:
         path: node_modules
-        # Re-use the primary-key from the read action to ensure it is not recomputed. This could otherwise cause issues if our "build" step modifies files within one of the `hashFiles` directories.
+        # Re-use the primary-key from the restore action to ensure it is not recomputed. This could otherwise cause issues if our "build" step modifies files within one of the `hashFiles` directories.
         key: ${{ steps.cache.outputs.primary-key }}
 ```
 </details>
@@ -171,7 +171,7 @@ This extends the [Just caching with manual control](#just-caching-manual) recipe
 
 When your workflow grows and you add more checks, you will want to split up your jobs. Using the cache you can share dependencies across multiple jobs efficiently.
 
-This moves the `install` step to its own job and reads dependencies from cache when it gets time to build the app. The cache can be read in multiple jobs simultaneously.
+This moves the `install` step to its own job and restores dependencies from cache when it gets time to build the app. The cache can be restored in multiple jobs simultaneously.
 
 ```yaml
 name: Build app
@@ -186,7 +186,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -210,7 +210,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "node_modules" from cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -248,7 +248,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -272,7 +272,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "node_modules" from cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -281,7 +281,7 @@ jobs:
     - name: Build app
       run: yarn build
 
-    # Notice that we do not use a "read" in this job: the build in our imaginary project can't reuse its own build files so restoring that before building would be a waste of time.
+    # Notice that we do not use a "restore" in this job: the build in our imaginary project can't reuse its own build files so restoring that before building would be a waste of time.
     - name: Save "build" to cache
       uses: martijnhols/actions-cache/save@main
       with:
@@ -295,7 +295,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "build" from cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: build
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches', 'src', '.babelrc') }}
@@ -322,7 +322,7 @@ jobs:
 
     - name: Restore "node_modules" from cache
       id: cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -356,7 +356,7 @@ jobs:
     - name: Restore "node_modules" from cache
       # Only execute if the build isn't already in cache
       if: steps.cache.outputs.cache-hit != 'true'
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: node_modules
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches') }}
@@ -367,7 +367,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: yarn build
 
-    # Notice that we do not use a "read" in this job: the build in our imaginary project can't reuse its own build files so restoring that before building would be a waste of time.
+    # Notice that we do not use a "restore" in this job: the build in our imaginary project can't reuse its own build files so restoring that before building would be a waste of time.
     - name: Save "build" to cache
       # Only execute if the build isn't already in cache
       if: steps.cache.outputs.cache-hit != 'true'
@@ -383,7 +383,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Restore "build" from cache
-      uses: martijnhols/actions-cache/read@main
+      uses: martijnhols/actions-cache/restore@main
       with:
         path: build
         key: ${{ runner.os }}-node_modules-${{ hashFiles('yarn.lock', 'patches', 'src', '.babelrc') }}
