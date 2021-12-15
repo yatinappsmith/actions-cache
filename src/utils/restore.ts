@@ -16,38 +16,29 @@ export default async function restore(): Promise<void> {
     const restoreKeys = getRestoreKeys();
     const cachePaths = getCachePaths();
 
-    try {
-        const cacheKey = await cache.restoreCache(
-            cachePaths,
+    const cacheKey = await cache.restoreCache(
+        cachePaths,
+        primaryKey,
+        restoreKeys
+    );
+    if (!cacheKey) {
+        const message = `Cache not found for input keys: ${[
             primaryKey,
-            restoreKeys
-        );
-        if (!cacheKey) {
-            const message = `Cache not found for input keys: ${[
-                primaryKey,
-                ...restoreKeys
-            ].join(", ")}`;
-            if (isCacheRequired()) {
-                throw new Error(message);
-            } else {
-                core.info(message);
-                return;
-            }
-        }
-
-        // Store the matched cache key
-        utils.setCacheState(cacheKey);
-
-        const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
-        utils.setCacheHitOutput(isExactKeyMatch);
-
-        core.info(`Cache restored from key: ${cacheKey}`);
-    } catch (error) {
-        if (error.name === cache.ValidationError.name) {
-            throw error;
+            ...restoreKeys
+        ].join(", ")}`;
+        if (isCacheRequired()) {
+            throw new Error(message);
         } else {
-            utils.logWarning(error.message);
-            utils.setCacheHitOutput(false);
+            core.info(message);
+            return;
         }
     }
+
+    // Store the matched cache key
+    utils.setCacheState(cacheKey);
+
+    const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
+    utils.setCacheHitOutput(isExactKeyMatch);
+
+    core.info(`Cache restored from key: ${cacheKey}`);
 }
