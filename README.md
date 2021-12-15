@@ -472,6 +472,13 @@ Additionally, you can use arbitrary command output in a cache key, such as a dat
 
 See [Using contexts to create cache keys](https://help.github.com/en/actions/configuring-and-managing-workflows/caching-dependencies-to-speed-up-workflows#using-contexts-to-create-cache-keys)
 
+If you are only using the save action, sometimes you need to compute the cache-key before generating the artifact you wish to cache. This ensures the generated artifact does not affect the cache-key. This can be achieved with basic actions syntax:
+```yaml
+      - name: Generate react-native cache key
+        id: cache-key
+        run: echo "::set-output name=value::my-cache-key-${{ hashFiles('react-native') }}"
+```
+
 ## Cache Limits
 
 A repository can have up to 5GB of caches. Once the 5GB limit is reached, older caches will be evicted based on when the cache was last accessed. Caches that are not accessed within the last week will also be evicted.
