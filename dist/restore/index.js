@@ -59751,25 +59751,45 @@ function restore() {
         utils.setPrimaryKeyOutput(primaryKey);
         const restoreKeys = getRestoreKeys_1.default();
         const cachePaths = getCachePaths_1.default();
-        const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
-        if (!cacheKey) {
-            const message = `Cache not found for input keys: ${[
-                primaryKey,
-                ...restoreKeys
-            ].join(", ")}`;
+        try {
+            const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
+            if (!cacheKey) {
+                const message = `Cache not found for input keys: ${[
+                    primaryKey,
+                    ...restoreKeys
+                ].join(", ")}`;
+                if (isCacheRequired_1.default()) {
+                    throw new Error(message);
+                }
+                else {
+                    core.info(message);
+                    return false;
+                }
+            }
+            // Store the matched cache key
+            utils.setCacheState(cacheKey);
+            const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
+            utils.setCacheHitOutput(isExactKeyMatch);
+            core.info(`Cache restored from key: ${cacheKey}`);
+            return true;
+        }
+        catch (error) {
+            // When cache is not required, any non-input failures (such as network
+            // failures) are allowed so they don't unnecessarily hold up the job
             if (isCacheRequired_1.default()) {
-                throw new Error(message);
+                throw error;
             }
             else {
-                core.info(message);
-                return;
+                if (error.name === cache.ValidationError.name) {
+                    throw error;
+                }
+                else {
+                    utils.logWarning(error.message);
+                    utils.setCacheHitOutput(false);
+                }
             }
+            return false;
         }
-        // Store the matched cache key
-        utils.setCacheState(cacheKey);
-        const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
-        utils.setCacheHitOutput(isExactKeyMatch);
-        core.info(`Cache restored from key: ${cacheKey}`);
     });
 }
 exports.default = restore;
@@ -59783,15 +59803,16 @@ exports.default = restore;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const actions_cache_1 = __nccwpck_require__(5977);
 const actionUtils_1 = __nccwpck_require__(6850);
 const constants_1 = __nccwpck_require__(8593);
 function validate() {
     if (actionUtils_1.isGhes()) {
-        throw new Error("Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details");
+        throw new actions_cache_1.ValidationError("Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details");
     }
     // Validate inputs, this can cause task failure
     if (!actionUtils_1.isValidEvent()) {
-        throw new Error(`Event Validation Error: The event type ${process.env[constants_1.Events.Key]} is not supported because it's not tied to a branch or tag ref.`);
+        throw new actions_cache_1.ValidationError(`Event Validation Error: The event type ${process.env[constants_1.Events.Key]} is not supported because it's not tied to a branch or tag ref.`);
     }
 }
 exports.default = validate;
