@@ -59665,16 +59665,15 @@ exports.default = save;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const actions_cache_1 = __nccwpck_require__(5977);
 const actionUtils_1 = __nccwpck_require__(6850);
 const constants_1 = __nccwpck_require__(8593);
 function validate() {
     if (actionUtils_1.isGhes()) {
-        throw new actions_cache_1.ValidationError("Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details");
+        throw new Error("Cache action is not supported on GHES. See https://github.com/actions/cache/issues/505 for more details");
     }
     // Validate inputs, this can cause task failure
     if (!actionUtils_1.isValidEvent()) {
-        throw new actions_cache_1.ValidationError(`Event Validation Error: The event type ${process.env[constants_1.Events.Key]} is not supported because it's not tied to a branch or tag ref.`);
+        throw new Error(`Event Validation Error: The event type ${process.env[constants_1.Events.Key]} is not supported because it's not tied to a branch or tag ref.`);
     }
 }
 exports.default = validate;
