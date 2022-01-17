@@ -59751,36 +59751,25 @@ function restore() {
         utils.setPrimaryKeyOutput(primaryKey);
         const restoreKeys = getRestoreKeys_1.default();
         const cachePaths = getCachePaths_1.default();
-        try {
-            const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
-            if (!cacheKey) {
-                const message = `Cache not found for input keys: ${[
-                    primaryKey,
-                    ...restoreKeys
-                ].join(", ")}`;
-                if (isCacheRequired_1.default()) {
-                    throw new Error(message);
-                }
-                else {
-                    core.info(message);
-                    return;
-                }
-            }
-            // Store the matched cache key
-            utils.setCacheState(cacheKey);
-            const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
-            utils.setCacheHitOutput(isExactKeyMatch);
-            core.info(`Cache restored from key: ${cacheKey}`);
-        }
-        catch (error) {
-            if (error.name === cache.ValidationError.name) {
-                throw error;
+        const cacheKey = yield cache.restoreCache(cachePaths, primaryKey, restoreKeys);
+        if (!cacheKey) {
+            const message = `Cache not found for input keys: ${[
+                primaryKey,
+                ...restoreKeys
+            ].join(", ")}`;
+            if (isCacheRequired_1.default()) {
+                throw new Error(message);
             }
             else {
-                utils.logWarning(error.message);
-                utils.setCacheHitOutput(false);
+                core.info(message);
+                return;
             }
         }
+        // Store the matched cache key
+        utils.setCacheState(cacheKey);
+        const isExactKeyMatch = utils.isExactKeyMatch(primaryKey, cacheKey);
+        utils.setCacheHitOutput(isExactKeyMatch);
+        core.info(`Cache restored from key: ${cacheKey}`);
     });
 }
 exports.default = restore;
