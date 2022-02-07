@@ -1,3 +1,5 @@
+import * as core from "@actions/core";
+
 import * as utils from "./utils/actionUtils";
 import getCacheKey from "./utils/getCacheKey";
 import save from "./utils/save";
@@ -15,9 +17,10 @@ async function run(): Promise<void> {
         // Get the primary key from inputs. On correct usage, this will be the
         // output from either the getCacheKey, check or read actions.
         const primaryKey = getCacheKey();
+
         await save(primaryKey);
     } catch (error) {
-        utils.logWarning(error.message);
+        core.setFailed(error.message);
     }
 }
 
