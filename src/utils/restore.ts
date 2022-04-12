@@ -31,6 +31,7 @@ export default async function restore(): Promise<boolean> {
                 throw new Error(message);
             } else {
                 core.info(message);
+                utils.setCacheHitOutput(false);
                 return false;
             }
         }
