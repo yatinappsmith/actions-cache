@@ -59422,6 +59422,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
 const utils = __importStar(__nccwpck_require__(6850));
 const getCacheKey_1 = __importDefault(__nccwpck_require__(1230));
 const save_1 = __importDefault(__nccwpck_require__(7031));
@@ -59440,7 +59441,7 @@ function run() {
             yield save_1.default(primaryKey);
         }
         catch (error) {
-            utils.logWarning(error.message);
+            core.setFailed(error.message);
         }
     });
 }

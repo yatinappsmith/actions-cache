@@ -59692,7 +59692,9 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
 const constants_1 = __nccwpck_require__(8593);
 function isCacheRequired() {
-    return core.getInput(constants_1.Inputs.Required, { required: false });
+    return (core.getInput(constants_1.Inputs.Required, {
+        required: false
+    }) !== "false");
 }
 exports.default = isCacheRequired;
 
@@ -59763,6 +59765,7 @@ function restore() {
                 }
                 else {
                     core.info(message);
+                    utils.setCacheHitOutput(false);
                     return false;
                 }
             }
