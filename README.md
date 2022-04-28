@@ -18,7 +18,7 @@ While this is a fork, there are currently no plans to merge this into GitHub's [
 
 ### martijnhols/actions-cache
 
-This is the base action largely matching GitHub's [actions/cache](https://github.com/actions/cache). Under the hood this calls the `restore` action where you place the action, and the `save` action just before the job finishes.
+This is the base action  largely matching GitHub's [actions/cache](https://github.com/actions/cache). Under the hood this calls the `restore` action where you place the action, and the `save` action just before the job finishes.
 
 This can be used for caching a step such as installing dependencies which are not re-used in other jobs. If you want to reuse your data in other jobs, use one of the other actions.
 
